@@ -1,0 +1,15 @@
+{
+    "git.path": "/usr/bin/git",
+    "terminal.integrated.defaultProfile.windows": "Ubuntu-22.04",
+    "python.defaultInterpreterPath": "/usr/bin/python3",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/src"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "-q"
+    ],
+    "editor.formatOnSave": true,
+    "files.trimTrailingWhitespace": true,
+    "jupyter.alwaysTrustNotebooks": false
+}

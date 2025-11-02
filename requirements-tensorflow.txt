@@ -1,0 +1,9 @@
+keras>=3.0.0
+tensorflow>=2.15
+numpy
+pytest
+pytest-xdist
+ruff
+black
+isort
+pre-commit

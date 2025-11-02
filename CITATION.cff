@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "grokking-mechanism-test"
+version: "1.0.0"
+authors:
+  - family-names: "McBride"
+    given-names: "Michael"
+abstract: >
+  Keras 3 / PyTorch tests of the geometric grokking hypothesis — that delayed
+  generalization stems from a geometric phase transition minimizing
+  low-frequency energy of an implicit graph Laplacian in learned
+  representations, rather than from weight decay or circuit efficiency alone.
+repository-code: "https://github.com/MichaelsEngineering/grokking-mechanism-test"
+license: "MIT"
+keywords:
+  - deep learning
+  - PyTorch
+  - Keras
+  - grokking
+  - geometric phase transition
+  - implicit graph Laplacian
+  - generalization
+type: software
+date-released: 2025-11-02
+
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "McBride"
+      given-names: "Michael"
+  title: "Grokking Mechanism Test: Keras 3 / PyTorch Investigations into Geometric Phase Transitions in Neural Representations"
+  year: 2025
+  journal: "Unpublished Research Repository"
+  url: "https://github.com/MichaelsEngineering/grokking-mechanism-test"
+  identifiers:
+    - type: "bibtex"
+      value: |
+        @software{mcbride2025grokking,
+          author = {Michael McBride},
+          title = {Grokking Mechanism Test: Keras 3 / PyTorch Investigations into Geometric Phase Transitions in Neural Representations},
+          year = {2025},
+          url = {https://github.com/MichaelsEngineering/grokking-mechanism-test},
+          version = {1.0.0},
+          note = {Keras 3 / PyTorch tests of the geometric grokking hypothesis — delayed generalization via a geometric phase transition minimizing low-frequency Laplacian energy.}
+        }

@@ -1,0 +1,10 @@
+keras>=3.0.0
+jax
+jaxlib
+numpy
+pytest
+pytest-xdist
+ruff
+black
+isort
+pre-commit
