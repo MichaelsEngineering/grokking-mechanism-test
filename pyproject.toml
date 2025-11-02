@@ -1,0 +1,32 @@
+[project]
+name = "grokking-mechanism-test"
+version = "0.0.1"
+description = "Keras 3 multi-backend tests for geometric grokking"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Michael McBride" }]
+dependencies = ["keras>=3.0.0", "numpy>=1.24"]
+
+[project.optional-dependencies]
+torch = ["torch>=2.2"]
+tensorflow = ["tensorflow>=2.15"]
+jax = ["jax", "jaxlib"]
+dev = ["pytest", "pytest-xdist", "ruff", "black", "isort", "pre-commit"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+line-length = 100
