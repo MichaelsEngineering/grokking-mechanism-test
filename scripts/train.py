@@ -317,7 +317,7 @@ def main():
         scheduler = None
 
     # Logging
-    out_dir = logcfg.get("out_dir", f"runs/modular_addition")
+    out_dir = logcfg.get("out_dir", "runs/modular_addition")
     ensure_dir(out_dir)
     metrics_path = os.path.join(out_dir, logcfg.get("metrics_csv_name", "metrics.csv"))
     with open(os.path.join(out_dir, "config_used.yaml"), "w") as f:
@@ -335,7 +335,6 @@ def main():
     # Train loop
     model.train()
     grad_clip = float(tcfg.get("grad_clip_norm", 0.0))
-    log_every = int(tcfg.get("log_interval_steps", 200))
     eval_every = int(tcfg.get("eval_every_steps", 2000))
 
     state = {"grokking_step": None}
