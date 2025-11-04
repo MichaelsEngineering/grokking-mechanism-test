@@ -4,7 +4,7 @@ from scripts.train import ModularDataset  # simple import since we put it in scr
 
 
 def test_modular_dataset_split_deterministic():
-    cfg = dict(N=97, op="add", train_fraction=0.1, seed=1337, split="hash", cache=True)
+    cfg = dict(N=97, op="add", train_fraction=0.1, seed=1337, split="hash")
 
     ds_train_1 = ModularDataset(role="train", **cfg)
     ds_val_1 = ModularDataset(role="val", **cfg)
