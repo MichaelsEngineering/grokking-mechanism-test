@@ -1,7 +1,7 @@
 # Grokking Mechanism Test
 
 **Exploring the Geometric Grokking Hypothesis** — that delayed generalization in neural networks arises from a *geometric phase transition* minimizing low-frequency energy of an implicit graph Laplacian in learned representations, rather than from weight decay or circuit efficiency alone.
-*(Inspired by “Geometric GROKKING Unlocked & Explained,” AI Explained, 2024.)*
+*(Inspired by “Geometric GROKKING Unlocked & Explained,” Discover AI, 2025.)*
 
 ---
 
