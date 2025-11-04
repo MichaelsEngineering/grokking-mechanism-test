@@ -1,4 +1,8 @@
+import csv
+import os
+import subprocess
 import sys
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -26,3 +30,35 @@ def test_keras_backend_switch(monkeypatch):
     m.compile(optimizer="adam", loss="mse")
     history = m.fit(x, y, epochs=1, batch_size=32, verbose=0)
     assert "loss" in history.history
+
+
+def test_train_smoke(tmp_path: Path):
+    repo_root = Path(__file__).resolve().parents[1]
+    config = repo_root / "configs" / "modular_addition.yaml"
+    out_dir = tmp_path / "runs" / "modular_addition"
+
+    # run 50 steps on CPU; should be ~1–2s
+    cmd = [
+        sys.executable,
+        str(repo_root / "scripts" / "train.py"),
+        "--config",
+        str(config),
+        "train.total_steps=50",
+        f"logging.out_dir={out_dir}",
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+    # artifacts
+    metrics = out_dir / "metrics.csv"
+    cfg_copy = out_dir / "config_used.yaml"
+    assert metrics.exists()
+    assert cfg_copy.exists()
+
+    # header & last step
+    with metrics.open() as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+    assert len(rows) >= 1
+    assert {"step", "train_loss", "train_acc", "val_acc", "test_acc"}.issubset(reader.fieldnames)
+    assert int(rows[-1]["step"]) == 50

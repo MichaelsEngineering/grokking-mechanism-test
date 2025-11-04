@@ -1,0 +1,62 @@
+# Modular Arithmetic Task — baseline grokking experiment with steps, warmup, AdamW
+task: modular
+
+dataset:
+  N: 97
+  op: add
+  train_fraction: 0.1          # stronger grokking signal than 0.2
+  split: hash
+  seed: 1337
+  cache: true
+
+loader:
+  batch_size: 512
+  num_workers: 2
+  pin_memory: true
+
+model:
+  type: mlp
+  hidden_dim: 256
+  layers: 3
+  activation: relu
+  dropout: 0.0
+  # Optional: embedding inputs instead of raw ints improves spectral alignment
+  input_encoding:
+    type: one_hot           # one_hot | learned
+    embed_dim: 0            # ignored for one_hot
+
+train:
+  # Prefer steps over epochs for long grokking runs
+  total_steps: 300000
+  optimizer: adamw
+  lr: 3e-4
+  weight_decay: 1e-2        # start here; consider {3e-3, 1e-2, 3e-2} sweeps
+  betas: [0.9, 0.999]
+  eps: 1e-8
+
+  # Scheduler with warmup then cosine
+  scheduler:
+    name: cosine_with_warmup
+    warmup_steps: 2000
+    min_lr_ratio: 0.05      # final lr = min_lr_ratio * lr
+
+  # Useful stability knobs for long runs
+  grad_clip_norm: 1.0
+  ema:
+    use: false
+    decay: 0.999
+
+  # Logging and checkpoint cadence in steps
+  log_interval_steps: 200
+  checkpoint_every_steps: 5000
+  eval_every_steps: 2000
+
+  # Optional tiny label smoothing if desired
+  label_smoothing: 0.0
+
+spectral:
+  compute: true
+  low_freq_cutoff: 0.1
+  projection_samples: 1024    # lighter than 4096, same qualitative signal
+  seed: 1337
+  # Save periodic spectral snapshots for

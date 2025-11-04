@@ -14,25 +14,29 @@ The experiments are designed to measure *spectral energy redistribution* and *re
 
 ## Repository Structure
 
-grokking-mechanism-test/
-├── README.md
-├── LICENSE
+grokking-mechanism-test/ <br>
+├── README.md <br>
+├── LICENSE <br>
 ├── CITATION.cff
-├── CODE_OF_CONDUCT.md
-├── CONTRIBUTING.md
-├── requirements-*.txt
-├── pyproject.toml
-├── scripts/
-│ ├── train.py # (Planned) entry point for running experiments
-│ ├── evaluate.py # (Planned) evaluation utilities
-│ └── visualize.py # (Planned) plotting/analysis helpers
-├── src/
-│ └── grokking_mechanism_test/ # core model + training logic (to be implemented)
-├── tests/
-│ └── test_backend_smoke.py # basic backend compatibility check
-├── dist/ # built wheels (if packaged)
-├── grokking-mech-env/ # optional local venv (ignore in docs)
-└── .github/workflows/ci.yml # CI configuration
+├── CODE_OF_CONDUCT.md  <br>
+├── CONTRIBUTING.md  <br>
+├── requirements-*.txt  <br>
+├── pyproject.toml  <br>
+├──configs/
+   ├── modular_addition.yaml <br>
+   ├── parity.yaml <br>
+   └── sequence_copy.yaml <br>
+└── scripts/  <br>
+   ├── train.py # (Planned) entry point for running experiments  <br>
+   ├── evaluate.py # (Planned) evaluation utilities  <br>
+   └── visualize.py # (Planned) plotting/analysis helpers  <br>
+└── src/  <br>
+   └── grokking_mechanism_test/ # core model + training logic (to be implemented)  <br>
+└── tests/  <br>
+   └── test_backend_smoke.py # basic backend compatibility check  <br>
+├── dist/ # built wheels (if packaged)  <br>
+├── grokking-mech-env/ # optional local venv (ignore in docs)  <br>
+└── .github/workflows/ci.yml # CI configuration  <br>
 
 
 ---
@@ -69,6 +73,8 @@ pip install -r requirements-pytorch.txt
 ### Usage (Placeholder Examples)
 
 The scripts are scaffolds for now — implementation in progress.
+
+The YAML configuration files are the central control mechanism for the project. They are used by the scripts/train.py entry point to define and parameterize every aspect of a specific experiment, from data generation to metric computation.
 
 Training
 
