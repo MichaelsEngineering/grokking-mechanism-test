@@ -133,9 +133,13 @@ def test_visualize_script_creates_expected_plots(fake_run: Path, tmp_path: Path,
         "--grok_patience",
         "1",
     ]
-    result = subprocess.run(cmd, capture_output=True, text=True, env=env, cwd=Path(__file__).resolve().parents[1])
+    result = subprocess.run(
+        cmd, capture_output=True, text=True, env=env, cwd=Path(__file__).resolve().parents[1]
+    )
     if result.returncode != 0:
-        raise AssertionError(f"visualize.py failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}")
+        raise AssertionError(
+            f"visualize.py failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
+        )
 
     per_run_dir = outdir / fake_run.name
     expected_files = [
