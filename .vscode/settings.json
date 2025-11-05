@@ -18,6 +18,6 @@
     },
     // 3. Set Ruff as the default formatter for Python
     "[python]": {
-        "editor.defaultFormatter": "astral-sh.ruff"
+        "editor.defaultFormatter": "charliermarsh.ruff"
     },
 }
