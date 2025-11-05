@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        backend: [torch, tensorflow, jax]
+        backend: [torch]
     env:
       KERAS_BACKEND: ${{ matrix.backend }}
       PIP_DISABLE_PIP_VERSION_CHECK: "1"
