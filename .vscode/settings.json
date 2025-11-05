@@ -11,5 +11,13 @@
     ],
     "editor.formatOnSave": true,
     "files.trimTrailingWhitespace": true,
-    "jupyter.alwaysTrustNotebooks": false
+    "jupyter.alwaysTrustNotebooks": false,
+    // 2. Enable "fix all" (linting/import sorting) on save
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit"
+    },
+    // 3. Set Ruff as the default formatter for Python
+    "[python]": {
+        "editor.defaultFormatter": "astral-sh.ruff"
+    },
 }
