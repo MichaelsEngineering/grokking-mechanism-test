@@ -2,4 +2,3 @@ keras>=3.0.0
 torch>=2.2
 numpy
 pytest
-

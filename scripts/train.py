@@ -16,7 +16,6 @@ import yaml
 from torch.optim.lr_scheduler import CosineAnnealingLR, LinearLR, SequentialLR
 from torch.utils.data import DataLoader, Dataset
 
-
 criterion = nn.CrossEntropyLoss()
 
 
@@ -495,7 +494,9 @@ def main() -> None:
     # Finalize: write grokking_step to a small sidecar file if detected
     if state.get("grokking_step") is not None:
         grokking_path = out_dir / "grokking.json"
-        grokking_path.write_text(f'{{"grokking_step": {state["grokking_step"]}}}\n', encoding="utf-8")
+        grokking_path.write_text(
+            f'{{"grokking_step": {state["grokking_step"]}}}\n', encoding="utf-8"
+        )
 
 
 if __name__ == "__main__":

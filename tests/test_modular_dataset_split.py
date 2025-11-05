@@ -1,10 +1,10 @@
-import math
-
 import pytest
 
 pytest.importorskip("torch")
 
-from scripts.train import ModularDataset  # simple import since we put it in scripts/
+from scripts.train import (  # noqa: E402  # requires torch; skip enforced above
+    ModularDataset,
+)
 
 
 def test_modular_dataset_split_deterministic():

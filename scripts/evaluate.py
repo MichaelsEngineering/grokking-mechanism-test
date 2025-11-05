@@ -91,7 +91,9 @@ def main(argv: Iterable[str] | None = None) -> int:
     )
     args = ap.parse_args(list(argv) if argv is not None else None)
 
-    metrics_path = resolve_path(args.metrics) if args.metrics else resolve_path(args.run_dir) / "metrics.csv"
+    metrics_path = (
+        resolve_path(args.metrics) if args.metrics else resolve_path(args.run_dir) / "metrics.csv"
+    )
     if not metrics_path.exists():
         raise SystemExit(f"Metrics file not found: {metrics_path}")
 

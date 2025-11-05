@@ -20,14 +20,13 @@ Expected files per run directory:
 Outputs: .png and .svg files written to --output_dir.
 """
 from __future__ import annotations
+
 import argparse
+import csv
 import glob
-import os
+import math
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
-
-import math
-import csv
 
 # Soft deps: prefer pandas if present; otherwise fall back to csv module
 try:
@@ -40,6 +39,7 @@ import matplotlib.pyplot as plt
 # -------------------------------
 # Utilities
 # -------------------------------
+
 
 def _ensure_dir(p: Path) -> None:
     p.mkdir(parents=True, exist_ok=True)
@@ -86,6 +86,7 @@ def _group_runs_by_tag(runs: List[Dict], tag_keys: List[str]) -> Dict[Tuple, Lis
 # Loading and normalization
 # -------------------------------
 
+
 def load_run(run_dir: Path) -> Dict:
     """Load a single run directory into a normalized structure.
 
@@ -103,11 +104,23 @@ def load_run(run_dir: Path) -> Dict:
     if pd is not None:
         df = pd.read_csv(metrics_path)
         # Normalize column names
-        df.columns = [c.strip() for c in df.columns]
+        df.columns = [c.strip() if isinstance(c, str) else str(c) for c in df.columns]
         # Coerce common numeric fields
         for col in [
-            "step","loss","accuracy","l1_norm","l2_norm","nuclear_norm",
-            "train_err","test_err","alpha","beta","dataset_fraction","weight_decay","lr","seed"
+            "step",
+            "loss",
+            "accuracy",
+            "l1_norm",
+            "l2_norm",
+            "nuclear_norm",
+            "train_err",
+            "test_err",
+            "alpha",
+            "beta",
+            "dataset_fraction",
+            "weight_decay",
+            "lr",
+            "seed",
         ]:
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors="coerce")
@@ -125,8 +138,8 @@ def load_run(run_dir: Path) -> Dict:
                     row = val_rows.iloc[0]
             if row is None:
                 row = df.iloc[0]
-        for k in ["alpha","beta","dataset_fraction","weight_decay","lr","regularizer"]:
-            if row is not None and k in df.columns:
+        for k in ["alpha", "beta", "dataset_fraction", "weight_decay", "lr", "regularizer"]:
+            if row is not None and df is not None and k in df.columns:
                 meta[k] = _to_builtin_scalar(row[k])
             else:
                 meta[k] = None
@@ -143,7 +156,7 @@ def load_run(run_dir: Path) -> Dict:
                     break
             if row_choice is None:
                 row_choice = rows[0]
-        for k in ["alpha","beta","dataset_fraction","weight_decay","lr","regularizer"]:
+        for k in ["alpha", "beta", "dataset_fraction", "weight_decay", "lr", "regularizer"]:
             if row_choice is not None:
                 meta[k] = _to_float(row_choice.get(k)) if k != "regularizer" else row_choice.get(k)
             else:
@@ -157,7 +170,9 @@ def load_run(run_dir: Path) -> Dict:
     if sing_path.exists():
         if pd is not None:
             singular = pd.read_csv(sing_path)
-            singular.columns = [c.strip() for c in singular.columns]
+            singular.columns = [
+                c.strip() if isinstance(c, str) else str(c) for c in singular.columns
+            ]
         else:
             singular = _read_csv(sing_path)
 
@@ -175,6 +190,7 @@ def load_run(run_dir: Path) -> Dict:
 # Grokking metrics (t1, t2, Δt)
 # -------------------------------
 
+
 def compute_t1_t2(
     df_or_rows,
     grok_threshold: float,
@@ -185,22 +201,32 @@ def compute_t1_t2(
     - t2: first step where VAL accuracy >= grok_threshold, sustained for `grok_patience` steps.
     Returns (t1, t2) as integer steps if found.
     """
-    if pd is not None and hasattr(df_or_rows, "__class__") and df_or_rows.__class__.__name__ == "DataFrame":
+    if (
+        pd is not None
+        and hasattr(df_or_rows, "__class__")
+        and df_or_rows.__class__.__name__ == "DataFrame"
+    ):
         df = df_or_rows.copy()
         if "step" not in df.columns or "split" not in df.columns or "accuracy" not in df.columns:
             return (None, None)
         df = df.sort_values("step")
 
         t1 = _first_sustained_crossing(df[df["split"] == "train"], "accuracy", 0.999, grok_patience)
-        t2 = _first_sustained_crossing(df[df["split"] == "val"], "accuracy", grok_threshold, grok_patience)
+        t2 = _first_sustained_crossing(
+            df[df["split"] == "val"], "accuracy", grok_threshold, grok_patience
+        )
         return (t1, t2)
     else:
         # csv fallback path
         rows: List[Dict[str, str]] = df_or_rows
         # sort
         rows = sorted(rows, key=lambda r: float(r.get("step", 0)))
-        t1 = _first_sustained_crossing_rows(rows, split="train", col="accuracy", thr=0.999, patience=grok_patience)
-        t2 = _first_sustained_crossing_rows(rows, split="val", col="accuracy", thr=grok_threshold, patience=grok_patience)
+        t1 = _first_sustained_crossing_rows(
+            rows, split="train", col="accuracy", thr=0.999, patience=grok_patience
+        )
+        t2 = _first_sustained_crossing_rows(
+            rows, split="val", col="accuracy", thr=grok_threshold, patience=grok_patience
+        )
         return (t1, t2)
 
 
@@ -228,7 +254,9 @@ def _first_sustained_crossing(df, col: str, thr: float, patience: int) -> Option
     return None
 
 
-def _first_sustained_crossing_rows(rows: List[Dict[str, str]], split: str, col: str, thr: float, patience: int) -> Optional[int]:
+def _first_sustained_crossing_rows(
+    rows: List[Dict[str, str]], split: str, col: str, thr: float, patience: int
+) -> Optional[int]:
     cnt = 0
     start_step = None
     for r in rows:
@@ -256,6 +284,7 @@ def _first_sustained_crossing_rows(rows: List[Dict[str, str]], split: str, col: 
 # -------------------------------
 # Plotting helpers
 # -------------------------------
+
 
 def _line_plot(ax, x, y, label: str, xscale: str = "linear", alpha: float = 0.9):
     ax.plot(x, y, label=label, alpha=alpha)
@@ -287,12 +316,13 @@ def _save(fig, outdir: Path, fname: str, tight: bool = True):
 # Plotting per-run curves
 # -------------------------------
 
+
 def plot_core_curves(run: Dict, outdir: Path, xscale: str):
     label = run["name"]
     if pd is not None and run["df"] is not None:
         df = run["df"].copy().sort_values("step")
         # Loss
-        fig, ax = plt.subplots(figsize=(7,4))
+        fig, ax = plt.subplots(figsize=(7, 4))
         for split in ["train", "val"]:
             if "split" in df.columns and (df["split"] == split).any():
                 sub = df[df["split"] == split]
@@ -302,7 +332,7 @@ def plot_core_curves(run: Dict, outdir: Path, xscale: str):
         _save(fig, outdir, f"{label}_loss_{xscale}")
 
         # Accuracy
-        fig, ax = plt.subplots(figsize=(7,4))
+        fig, ax = plt.subplots(figsize=(7, 4))
         for split in ["train", "val"]:
             if "split" in df.columns and (df["split"] == split).any():
                 sub = df[df["split"] == split]
@@ -313,8 +343,8 @@ def plot_core_curves(run: Dict, outdir: Path, xscale: str):
 
         # Norms
         has_norm = False
-        fig, ax = plt.subplots(figsize=(7,4))
-        for c, nice in [("l1_norm","L1"),("l2_norm","L2"),("nuclear_norm","nuclear")]:
+        fig, ax = plt.subplots(figsize=(7, 4))
+        for c, nice in [("l1_norm", "L1"), ("l2_norm", "L2"), ("nuclear_norm", "nuclear")]:
             if c in df.columns and df[c].notna().any():
                 has_norm = True
                 sub = df[df[c].notna()]
@@ -325,7 +355,7 @@ def plot_core_curves(run: Dict, outdir: Path, xscale: str):
 
         # Task errors if present
         if "train_err" in df.columns or "test_err" in df.columns:
-            fig, ax = plt.subplots(figsize=(7,4))
+            fig, ax = plt.subplots(figsize=(7, 4))
             if "train_err" in df.columns and df["train_err"].notna().any():
                 sub = df[df["train_err"].notna()]
                 _line_plot(ax, sub["step"], sub["train_err"], f"train_err", xscale=xscale)
@@ -336,14 +366,18 @@ def plot_core_curves(run: Dict, outdir: Path, xscale: str):
             _save(fig, outdir, f"{label}_task_errors_{xscale}")
 
         # Grok markers
-        t1, t2 = compute_t1_t2(df, grok_threshold=args.grok_threshold, grok_patience=args.grok_patience)
+        t1, t2 = compute_t1_t2(
+            df, grok_threshold=args.grok_threshold, grok_patience=args.grok_patience
+        )
         if t1 is not None or t2 is not None:
             # Overlay markers on accuracy plot (linear scale by default)
-            fig, ax = plt.subplots(figsize=(7,4))
+            fig, ax = plt.subplots(figsize=(7, 4))
             for split in ["train", "val"]:
                 if (df["split"] == split).any() and ("accuracy" in df.columns):
                     sub = df[df["split"] == split]
-                    _line_plot(ax, sub["step"], sub["accuracy"], f"{label}-{split}", xscale="linear")
+                    _line_plot(
+                        ax, sub["step"], sub["accuracy"], f"{label}-{split}", xscale="linear"
+                    )
             if t1 is not None:
                 ax.axvline(t1, color="tab:orange", linestyle="--", alpha=0.8, label=f"t1={t1}")
             if t2 is not None:
@@ -354,7 +388,7 @@ def plot_core_curves(run: Dict, outdir: Path, xscale: str):
         # csv fallback minimal plots
         rows = run["rows"]
         # organize by split
-        by_split: Dict[str, List[Tuple[int,float,float]]] = {}
+        by_split: Dict[str, List[Tuple[int, float, float]]] = {}
         for r in rows:
             s = r.get("split", "")
             step = int(float(r.get("step", 0)))
@@ -363,21 +397,26 @@ def plot_core_curves(run: Dict, outdir: Path, xscale: str):
             by_split.setdefault(s, []).append((step, loss, acc))
         for s in by_split.values():
             s.sort(key=lambda x: x[0])
+
         def _plot_xy(vals, idx, title, ylab, fname):
-            fig, ax = plt.subplots(figsize=(7,4))
+            fig, ax = plt.subplots(figsize=(7, 4))
             for split, seq in by_split.items():
                 x = [v[0] for v in seq]
                 y = [v[idx] for v in seq]
                 _line_plot(ax, x, y, f"{label}-{split}", xscale=xscale)
             _finish(ax, title, ylabel=ylab)
             _save(fig, outdir, fname)
+
         _plot_xy(by_split, 1, f"Loss vs Steps — {label}", "loss", f"{label}_loss_{xscale}")
-        _plot_xy(by_split, 2, f"Accuracy vs Steps — {label}", "accuracy", f"{label}_accuracy_{xscale}")
+        _plot_xy(
+            by_split, 2, f"Accuracy vs Steps — {label}", "accuracy", f"{label}_accuracy_{xscale}"
+        )
 
 
 # -------------------------------
 # Cross-run summary plots
 # -------------------------------
+
 
 def plot_time_to_generalization(runs: List[Dict], outdir: Path):
     pts = []
@@ -385,7 +424,9 @@ def plot_time_to_generalization(runs: List[Dict], outdir: Path):
     for run in runs:
         df = run["df"] if pd is not None else None
         rows = run["rows"] if pd is None else None
-        t1, t2 = compute_t1_t2(df if df is not None else rows, args.grok_threshold, args.grok_patience)
+        t1, t2 = compute_t1_t2(
+            df if df is not None else rows, args.grok_threshold, args.grok_patience
+        )
         if t2 is not None:
             pts.append((t1, t2))
             name = run["name"]
@@ -393,7 +434,7 @@ def plot_time_to_generalization(runs: List[Dict], outdir: Path):
             label = name
             # enrich label with a few tags if present
             tag_bits = []
-            for k in ["alpha","beta","dataset_fraction","regularizer"]:
+            for k in ["alpha", "beta", "dataset_fraction", "regularizer"]:
                 v = meta.get(k)
                 if v is not None and v != "":
                     tag_bits.append(f"{k}={v}")
@@ -402,12 +443,11 @@ def plot_time_to_generalization(runs: List[Dict], outdir: Path):
             labels.append(label)
     if not pts:
         return
-    t1s = [p[0] if p[0] is not None else float('nan') for p in pts]
     t2s = [p[1] for p in pts]
-    deltas = [ (p[1] - p[0]) if (p[0] is not None) else float('nan') for p in pts ]
+    deltas = [(p[1] - p[0]) if (p[0] is not None) else float("nan") for p in pts]
 
     # Plot t2
-    fig, ax = plt.subplots(figsize=(8,4))
+    fig, ax = plt.subplots(figsize=(8, 4))
     ax.barh(range(len(t2s)), t2s, color="tab:green", alpha=0.8)
     ax.set_yticks(range(len(labels)))
     ax.set_yticklabels(labels)
@@ -416,7 +456,7 @@ def plot_time_to_generalization(runs: List[Dict], outdir: Path):
 
     # Plot Δt where available
     if not all(math.isnan(d) for d in deltas):
-        fig, ax = plt.subplots(figsize=(8,4))
+        fig, ax = plt.subplots(figsize=(8, 4))
         ax.barh(range(len(deltas)), deltas, color="tab:blue", alpha=0.8)
         ax.set_yticks(range(len(labels)))
         ax.set_yticklabels(labels)
@@ -428,16 +468,34 @@ def plot_time_to_generalization(runs: List[Dict], outdir: Path):
 # Main
 # -------------------------------
 
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Visualize grokking runs (multi-run supported)")
     p.add_argument("--run", type=str, help="Single run directory (shortcut for --runs)")
     p.add_argument("--runs", nargs="+", help="Run directories or glob patterns (space separated)")
-    p.add_argument("--output_dir", type=str, help="Directory for output plots (defaults to run/plots or ./plots)")
-    p.add_argument("--xscale", type=str, default="linear", choices=["linear","log"], help="X-axis scale")
-    p.add_argument("--show", action="store_true", help="Show interactive windows (in addition to saving)")
-    p.add_argument("--grok_threshold", type=float, default=0.99, help="Val accuracy threshold for t2")
-    p.add_argument("--grok_patience", type=int, default=100, help="Steps to confirm sustained crossing")
-    p.add_argument("--tag_keys", nargs="*", default=["alpha","beta","dataset_fraction","regularizer"], help="Keys to group/label runs")
+    p.add_argument(
+        "--output_dir",
+        type=str,
+        help="Directory for output plots (defaults to run/plots or ./plots)",
+    )
+    p.add_argument(
+        "--xscale", type=str, default="linear", choices=["linear", "log"], help="X-axis scale"
+    )
+    p.add_argument(
+        "--show", action="store_true", help="Show interactive windows (in addition to saving)"
+    )
+    p.add_argument(
+        "--grok_threshold", type=float, default=0.99, help="Val accuracy threshold for t2"
+    )
+    p.add_argument(
+        "--grok_patience", type=int, default=100, help="Steps to confirm sustained crossing"
+    )
+    p.add_argument(
+        "--tag_keys",
+        nargs="*",
+        default=["alpha", "beta", "dataset_fraction", "regularizer"],
+        help="Keys to group/label runs",
+    )
     return p.parse_args()
 
 
