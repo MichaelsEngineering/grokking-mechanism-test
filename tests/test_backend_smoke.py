@@ -33,6 +33,7 @@ def test_keras_backend_switch(monkeypatch):
 
 
 def test_train_smoke(tmp_path: Path):
+    pytest.importorskip("torch")
     repo_root = Path(__file__).resolve().parents[1]
     config = repo_root / "configs" / "modular_addition.yaml"
     out_dir = tmp_path / "runs" / "modular_addition"

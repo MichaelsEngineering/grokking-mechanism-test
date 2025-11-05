@@ -1,5 +1,9 @@
 import math
 
+import pytest
+
+pytest.importorskip("torch")
+
 from scripts.train import ModularDataset  # simple import since we put it in scripts/
 
 
