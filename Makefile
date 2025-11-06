@@ -43,20 +43,22 @@ init:
 	$(PYTHON) -m pip install -r requirements-dev.txt
 
 # ==== Quality gates ====
+SRC := $(PKG) $(TESTS) scripts
+
 lint:
-	ruff check .
-	black --check .
-	isort --check-only .
+	ruff check $(SRC)
+	black --check $(SRC)
+	isort --check-only $(SRC)
 
 type:
 	mypy $(PKG) $(TESTS)
 
 format:
-	isort .
-	black .
+	isort $(SRC)
+	black $(SRC)
 
 format-check:
-	black --check .
+	black --check $(SRC)
 
 # ==== Tests ====
 test:
