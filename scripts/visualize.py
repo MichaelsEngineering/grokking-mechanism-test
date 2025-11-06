@@ -197,8 +197,10 @@ def compute_t1_t2(
     grok_patience: int,
 ) -> Tuple[Optional[int], Optional[int]]:
     """Compute t1 (train memorization) and t2 (val generalization) with patience.
-    - t1: first step where TRAIN accuracy >= 0.999 (configurable in future), sustained for `grok_patience` steps.
-    - t2: first step where VAL accuracy >= grok_threshold, sustained for `grok_patience` steps.
+    - t1: first step where TRAIN accuracy >= 0.999 (configurable later), sustained
+      for `grok_patience` steps.
+    - t2: first step where VAL accuracy >= grok_threshold, sustained for
+      `grok_patience` steps.
     Returns (t1, t2) as integer steps if found.
     """
     if (

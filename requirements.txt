@@ -1,0 +1,5 @@
+#
+# Default dependency set for local development.
+# Mirrors the PyTorch backend, which is our primary target.
+#
+-r requirements-torch.txt

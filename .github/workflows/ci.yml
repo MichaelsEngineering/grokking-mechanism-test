@@ -26,11 +26,9 @@ jobs:
             tensorflow)  pip install -r requirements-tensorflow.txt ;;
             jax)         pip install -r requirements-jax.txt ;;
           esac
+          pip install -r requirements-dev.txt
           pip install -e .[dev]
-      - name: Lint
-        run: |
-          ruff check .
-          black --check .
-          isort --check-only .
-      - name: Tests
-        run: pytest -q
+      - name: Run checks
+        run: make check
+      - name: Smoke test
+        run: make smoke
