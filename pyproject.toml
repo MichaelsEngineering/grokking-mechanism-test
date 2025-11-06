@@ -24,12 +24,32 @@ addopts = "-q"
 [tool.black]
 line-length = 100
 target-version = ["py310"]
+extend-exclude = '''
+(\.git|\.mypy_cache|\.ruff_cache|\.pytest_cache|\.venv|venv|dist|build|\.pre-commit-cache|.*/\.pre-commit-cache/.*|.*/site-packages/.*|.*/\.eggs/.*)
+'''
 
 [tool.isort]
 profile = "black"
 
 [tool.ruff]
 line-length = 100
+extend-exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".pytest_cache",
+    ".venv",
+    "venv",
+    "configs",
+    "dist",
+    "build",
+    "runs",
+    ".pre-commit-cache",
+    "grokking-mech-env",
+    "src/grokking_mechanism_test.egg-info",
+]
+force-exclude = true
+src = ["scripts", "tests"]
 
 [tool.ruff.lint]
 ignore = ["F541"]

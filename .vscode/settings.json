@@ -11,14 +11,20 @@
     ],
     "editor.formatOnSave": true,
     "files.trimTrailingWhitespace": true,
-    "jupyter.alwaysTrustNotebooks": false,
-    // 2. Enable "fix all" (linting/import sorting) on save
+    // Let VS Code auto-run Ruff fixes and import sorting on save
     "editor.codeActionsOnSave": {
-        "source.fixAll": "explicit"
+        "source.fixAll": true,
+        "source.organizeImports": true,
+        // Optional: be explicit about Ruff providers
+        "source.fixAll.ruff": true,
+        "source.organizeImports.ruff": true
     },
-    // 3. Set Ruff as the default formatter for Python
+    // Use Ruff as the Python formatter
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff"
     },
-    "makefile.configureOnOpen": false,
+    // Avoid formatter fights
+    "python.formatting.provider": "none",
+    "jupyter.alwaysTrustNotebooks": false,
+    "makefile.configureOnOpen": false
 }
