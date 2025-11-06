@@ -12,7 +12,7 @@ dependencies = ["keras>=3.0.0", "numpy>=1.24"]
 torch = ["torch>=2.2"]
 tensorflow = ["tensorflow>=2.15"]
 jax = ["jax", "jaxlib"]
-dev = ["pytest"]
+dev = ["pytest", "pytest-cov", "ruff", "black", "isort", "mypy", "pytest-watch"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

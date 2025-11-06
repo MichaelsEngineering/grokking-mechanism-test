@@ -20,16 +20,16 @@ grokking-mechanism-test/ <br>
 ├── CITATION.cff
 ├── CODE_OF_CONDUCT.md  <br>
 ├── CONTRIBUTING.md  <br>
-├── requirements-*.txt  <br>
+├── requirements.txt / requirements-dev.txt / requirements-*.txt  <br>
 ├── pyproject.toml  <br>
 ├──configs/
    ├── modular_addition.yaml <br>
    ├── parity.yaml <br>
    └── sequence_copy.yaml <br>
 └── scripts/  <br>
-   ├── train.py # (Planned) entry point for running experiments  <br>
-   ├── evaluate.py # (Planned) evaluation utilities  <br>
-   └── visualize.py # (Planned) plotting/analysis helpers  <br>
+   ├── train.py # entry point for running experiments  <br>
+   ├── evaluate.py # summarise metrics.csv for a run  <br>
+   └── visualize.py # plotting/analysis helpers  <br>
 └── src/  <br>
    └── grokking_mechanism_test/ # core model + training logic (to be implemented)  <br>
 └── tests/  <br>
@@ -64,17 +64,20 @@ python3.11 -m venv grokking-mech-env
 source grokking-mech-env/bin/activate
 ```
 
-# Install dependencies
+# Install dependencies (PyTorch default)
 
 ```bash
-pip install -r requirements-pytorch.txt
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+# or run: make init
 ```
 
-### Usage (Placeholder Examples)
+> Alternate backends are still available through the backend-specific files
+> (`requirements-jax.txt`, `requirements-tensorflow.txt`, `requirements-torch.txt`).
 
-The scripts are scaffolds for now — implementation in progress.
+### Usage
 
-The YAML configuration files are the central control mechanism for the project. They are used by the scripts/train.py entry point to define and parameterize every aspect of a specific experiment, from data generation to metric computation.
+The YAML configuration files are the central control mechanism for the project. They are used by `scripts/train.py` to define and parameterize every aspect of a specific experiment, from data generation to metric computation.
 
 Training
 
@@ -85,13 +88,27 @@ python scripts/train.py --config configs/modular_addition.yaml
 Evaluation
 
 ```bash
-python scripts/evaluate.py --checkpoint runs/modular_addition/best.pt
+python scripts/evaluate.py --run-dir runs/modular_addition
+# or, if you only have the CSV path:
+python scripts/evaluate.py --metrics runs/modular_addition/metrics.csv
 ```
 
 Visualization
 
 ```bash
-python scripts/visualize.py --run runs/modular_addition/
+python scripts/visualize.py --run runs/modular_addition --output_dir plots
+```
+
+Quick smoke test (CPU-only, tiny run) – useful both locally and in CI before touching training code:
+
+```bash
+make smoke
+```
+
+Fast local quality gate:
+
+```bash
+make check
 ```
 
 Expected outputs (once implemented):

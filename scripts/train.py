@@ -420,7 +420,8 @@ def main() -> None:
     if scfg.get("compute", False):
         fieldnames += ["spectral_low_frac", "spectral_entropy"]
         print(
-            "[info] Spectral metrics are not implemented in this minimal baseline; values will be empty."
+            "[info] Spectral metrics are not implemented in this minimal baseline; "
+            "values will be empty."
         )
 
     # Train loop
