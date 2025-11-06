@@ -35,12 +35,13 @@ def test_train_smoke(tmp_path: Path):
     pytest.importorskip("torch")
     repo_root = Path(__file__).resolve().parents[1]
     config = repo_root / "configs" / "modular_addition.yaml"
+    scripts_dir = repo_root / "src" / "scripts"
     out_dir = tmp_path / "runs" / "modular_addition"
 
     # run 50 steps on CPU; should be ~1–2s
     cmd = [
         sys.executable,
-        str(repo_root / "scripts" / "train.py"),
+        str(scripts_dir / "train.py"),
         "--config",
         str(config),
         "train.total_steps=50",

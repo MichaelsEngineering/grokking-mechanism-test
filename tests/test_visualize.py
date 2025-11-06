@@ -5,8 +5,7 @@ import sys
 from pathlib import Path
 
 import pytest
-
-from scripts import visualize
+from src.scripts import visualize
 
 
 @pytest.fixture()
@@ -125,7 +124,8 @@ def test_visualize_script_creates_expected_plots(fake_run: Path, tmp_path: Path,
     env["MPLBACKEND"] = "Agg"
     cmd = [
         sys.executable,
-        "scripts/visualize.py",
+        "-m",
+        "src.scripts.visualize",
         "--run",
         str(fake_run),
         "--output_dir",

@@ -26,12 +26,11 @@ grokking-mechanism-test/ <br>
    ├── modular_addition.yaml <br>
    ├── parity.yaml <br>
    └── sequence_copy.yaml <br>
-└── scripts/  <br>
-   ├── train.py # entry point for running experiments  <br>
-   ├── evaluate.py # summarise metrics.csv for a run  <br>
-   └── visualize.py # plotting/analysis helpers  <br>
 └── src/  <br>
-   └── grokking_mechanism_test/ # core model + training logic (to be implemented)  <br>
+    └── scripts/  <br>
+           ├── train.py # entry point for running experiments  <br>
+           ├── evaluate.py # summarise metrics.csv for a run  <br>
+           └── visualize.py # plotting/analysis helpers  <br>
 └── tests/  <br>
    └── test_backend_smoke.py # basic backend compatibility check  <br>
 ├── dist/ # built wheels (if packaged)  <br>
@@ -77,26 +76,26 @@ pip install -r requirements-dev.txt
 
 ### Usage
 
-The YAML configuration files are the central control mechanism for the project. They are used by `scripts/train.py` to define and parameterize every aspect of a specific experiment, from data generation to metric computation.
+The YAML configuration files are the central control mechanism for the project. They are used by `src.scripts.train` to define and parameterize every aspect of a specific experiment, from data generation to metric computation.
 
 Training
 
 ```bash
-python scripts/train.py --config configs/modular_addition.yaml
+python -m src.scripts.train --config configs/modular_addition.yaml
 ```
 
 Evaluation
 
 ```bash
-python scripts/evaluate.py --run-dir runs/modular_addition
+python -m src.scripts.evaluate --run-dir runs/modular_addition
 # or, if you only have the CSV path:
-python scripts/evaluate.py --metrics runs/modular_addition/metrics.csv
+python -m src.scripts.evaluate --metrics runs/modular_addition/metrics.csv
 ```
 
 Visualization
 
 ```bash
-python scripts/visualize.py --run runs/modular_addition --output_dir plots
+python -m src.scripts.visualize --run runs/modular_addition --output_dir plots
 ```
 
 Quick smoke test (CPU-only, tiny run) – useful both locally and in CI before touching training code:
@@ -140,7 +139,7 @@ It aims to complement other explanations (regularization, sparsity, or circuit e
 
 If you use or reference this repository, please cite:
 
-@software{mcbride2025_grokking_mechanism_test,
+@software{mcbride_2025_grokking_mechanism_test,
   author = {Michael McBride},
   title = {grokking-mechanism-test: Geometric Grokking Hypothesis Experiments},
   year = {2025},

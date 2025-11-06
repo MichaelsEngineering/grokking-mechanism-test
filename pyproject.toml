@@ -46,10 +46,9 @@ extend-exclude = [
     "runs",
     ".pre-commit-cache",
     "grokking-mech-env",
-    "src/grokking_mechanism_test.egg-info",
 ]
 force-exclude = true
-src = ["scripts", "tests"]
+src = ["src", "tests"]
 
 [tool.ruff.lint]
 ignore = ["F541"]

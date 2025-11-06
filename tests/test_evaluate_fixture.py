@@ -20,10 +20,11 @@ import pytest
 def test_evaluate_fixture_snapshot(run_subdir: str) -> None:
     repo_root = Path(__file__).resolve().parents[1]
     run_dir = repo_root / "tests" / "fixtures" / run_subdir
+    scripts_dir = repo_root / "src" / "scripts"
 
     cmd = [
         sys.executable,
-        str(repo_root / "scripts" / "evaluate.py"),
+        str(scripts_dir / "evaluate.py"),
         "--run-dir",
         str(run_dir),
     ]

@@ -85,10 +85,10 @@ check: lint type test coverage
 
 # ==== Training shortcuts ====
 smoke:
-	$(PYTHON) scripts/train.py --config $(SMOKE_CFG) --cpu-only --epochs 2 --seed 1337
+	$(PYTHON) -m src.scripts.train --config $(SMOKE_CFG) --cpu-only --epochs 2 --seed 1337
 
 train:
-	$(PYTHON) scripts/train.py $(ARGS)
+	$(PYTHON) -m src.scripts.train $(ARGS)
 
 unit:
 	pytest -q -m "unit"
