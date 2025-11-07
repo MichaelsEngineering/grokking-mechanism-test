@@ -9,6 +9,7 @@ unit tests:
   that images are created.  The plotting utilities themselves are intentionally
   lightweight so we can evolve them later without breaking the contract.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -178,10 +179,7 @@ def plot_time_to_generalization(
         return
     out_dir.mkdir(parents=True, exist_ok=True)
     labels = [run["name"] for run in runs]
-    values = [
-        _compute_t2(run["metrics"], threshold=threshold, patience=patience)
-        for run in runs
-    ]
+    values = [_compute_t2(run["metrics"], threshold=threshold, patience=patience) for run in runs]
     fig, ax = plt.subplots(figsize=(6, 3))
     ax.bar(labels, values, color="tab:green")
     ax.set_ylabel("t2 (steps)")
@@ -213,8 +211,10 @@ def _expand_run_args(single: Optional[str], patterns: Optional[Sequence[str]]) -
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
     run_paths = _expand_run_args(args.run, args.runs)
-    out_dir = Path(args.output_dir) if args.output_dir else (
-        run_paths[0] / "plots" if len(run_paths) == 1 else Path("plots")
+    out_dir = (
+        Path(args.output_dir)
+        if args.output_dir
+        else (run_paths[0] / "plots" if len(run_paths) == 1 else Path("plots"))
     )
     out_dir.mkdir(parents=True, exist_ok=True)
 

@@ -1,4 +1,5 @@
 """Tiny evaluation helper that summarises metrics CSV files."""
+
 from __future__ import annotations
 
 import argparse

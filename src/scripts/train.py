@@ -11,6 +11,7 @@ we just need enough structure for the current tests:
 
 The actual optimization loop will be filled in later.
 """
+
 from __future__ import annotations
 
 import argparse
