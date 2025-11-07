@@ -1,4 +1,5 @@
-keras>=3.0.0
-torch>=2.2
-numpy
-pytest
+# PyTorch backend tuned for local NVIDIA CUDA installs.
+# This file assumes CUDA 12.4 wheels; switch the index to cu121/cu122/etc if needed.
+--extra-index-url https://download.pytorch.org/whl/cu124
+
+torch==2.4.1

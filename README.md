@@ -15,28 +15,46 @@ The experiments are designed to measure *spectral energy redistribution* and *re
 ## Repository Structure
 
 grokking-mechanism-test/ <br>
-├── README.md <br>
+├── .github/ <br>
+│ └── workflows/ <br>
+│ └── ci.yml <br>
+├── configs/ <br>
+│ └── modular_addition.yaml <br>
+├── runs/ <br>
+├── plots/ <br>
+│ └── modular_addition/ <br>
+│ ├── config_used.yaml <br>
+│ └── metrics.csv <br>
+├── src/ <br>
+│ ├── init.py <br>
+│ ├── scripts/ <br>
+│ │ ├── init.py <br>
+│ │ ├── evaluate.py <br>
+│ │ ├── train.py <br>
+│ │ └── visualize.py <br>
+│ └── pycache/ <br>
+├── tests/ <br>
+│ ├── fixtures/mini_run <br>
+│ ├── test_backend_smoke.py <br>
+│ ├── test_evaluate_fixture.py <br>
+│ ├── test_modular_dataset_split.py <br>
+│ └── test_visualize.py <br>
+├── .gitignore <br>
+├── .pre-commit-config.yaml <br>
+├── AGENT.md <br>
+├── CITATION.cff <br>
+├── CODE_OF_CONDUCT.md <br>
+├── CONTRIBUTING.md <br>
+├── keras.json <br>
 ├── LICENSE <br>
-├── CITATION.cff
-├── CODE_OF_CONDUCT.md  <br>
-├── CONTRIBUTING.md  <br>
-├── requirements.txt / requirements-dev.txt / requirements-*.txt  <br>
-├── pyproject.toml  <br>
-├──configs/
-   ├── modular_addition.yaml <br>
-   ├── parity.yaml <br>
-   └── sequence_copy.yaml <br>
-└── src/  <br>
-    └── scripts/  <br>
-           ├── train.py # entry point for running experiments  <br>
-           ├── evaluate.py # summarise metrics.csv for a run  <br>
-           └── visualize.py # plotting/analysis helpers  <br>
-└── tests/  <br>
-   └── test_backend_smoke.py # basic backend compatibility check  <br>
-├── dist/ # built wheels (if packaged)  <br>
-├── grokking-mech-env/ # optional local venv (ignore in docs)  <br>
-└── .github/workflows/ci.yml # CI configuration  <br>
-
+├── Makefile <br>
+├── pyproject.toml <br>
+├── README.md <br>
+├── requirements.txt <br>
+├── requirements-dev.txt <br>
+├── requirements-torch.txt <br>
+├── requirements-tensorflow.txt <br>
+└── requirements-jax.txt <br>
 
 ---
 
@@ -69,11 +87,8 @@ source grokking-mech-env/bin/activate
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 # or run: make init
+pip install -r requirements-torch.txt or < Alternate backends are still available through the backend-specific files `requirements-jax.txt`/ `requirements-tensorflow.txt`).
 ```
-
-> Alternate backends are still available through the backend-specific files
-> (`requirements-jax.txt`, `requirements-tensorflow.txt`, `requirements-torch.txt`).
-
 ### Usage
 
 The YAML configuration files are the central control mechanism for the project. They are used by `src.scripts.train` to define and parameterize every aspect of a specific experiment, from data generation to metric computation.
