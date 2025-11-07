@@ -8,7 +8,7 @@
 
 # ==== Configuration ====
 PYTHON := python
-PKG ?= scripts
+PKG ?= src
 TESTS ?= tests
 SMOKE_CFG ?= configs/modular_addition.yaml
 
@@ -43,7 +43,7 @@ init:
 	$(PYTHON) -m pip install -r requirements-dev.txt
 
 # ==== Quality gates ====
-SRC := $(PKG) $(TESTS) scripts
+SRC := $(PKG) $(TESTS)
 
 lint:
 	ruff check $(SRC)

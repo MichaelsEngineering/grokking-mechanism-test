@@ -17,7 +17,7 @@ import argparse
 import csv
 import json
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, MutableMapping, Sequence
+from typing import Any, Dict, List, MutableMapping, Sequence
 
 import torch
 from torch.utils.data import Dataset
