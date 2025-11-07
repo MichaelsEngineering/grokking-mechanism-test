@@ -1,5 +1,12 @@
+# Shared runtime dependencies. Install this file first, then add exactly one backend:
+#   pip install -r requirements.txt -r requirements-torch.txt         # default / NVIDIA CUDA
+#   pip install -r requirements.txt -r requirements-tensorflow.txt    # TensorFlow
+#   pip install -r requirements.txt -r requirements-jax.txt           # JAX
 #
-# Default dependency set for local development.
-# Mirrors the PyTorch backend, which is our primary target.
-#
--r requirements-torch.txt
+# Keeping backends separate lets contributors choose their preferred stack while
+# avoiding accidental installs of incompatible GPU runtimes.
+
+keras>=3.3.0,<4.0
+numpy>=1.26.0,<2.0
+matplotlib>=3.8.0,<3.11
+PyYAML>=6.0.0,<7.0

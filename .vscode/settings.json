@@ -13,11 +13,10 @@
     "files.trimTrailingWhitespace": true,
     // Let VS Code auto-run Ruff fixes and import sorting on save
     "editor.codeActionsOnSave": {
-        "source.fixAll": true,
-        "source.organizeImports": true,
-        // Optional: be explicit about Ruff providers
-        "source.fixAll.ruff": true,
-        "source.organizeImports.ruff": true
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit",
+        "source.fixAll.ruff": "explicit",
+        "source.organizeImports.ruff": "explicit"
     },
     // Use Ruff as the Python formatter
     "[python]": {
