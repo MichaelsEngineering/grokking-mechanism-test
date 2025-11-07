@@ -8,7 +8,7 @@
 
 # ==== Configuration ====
 PYTHON := python
-PKG ?= scripts
+PKG ?= src
 TESTS ?= tests
 SMOKE_CFG ?= configs/modular_addition.yaml
 
@@ -43,7 +43,7 @@ init:
 	$(PYTHON) -m pip install -r requirements-dev.txt
 
 # ==== Quality gates ====
-SRC := $(PKG) $(TESTS) scripts
+SRC := $(PKG) $(TESTS)
 
 lint:
 	ruff check $(SRC)
@@ -85,10 +85,10 @@ check: lint type test coverage
 
 # ==== Training shortcuts ====
 smoke:
-	$(PYTHON) scripts/train.py --config $(SMOKE_CFG) --cpu-only --epochs 2 --seed 1337
+	$(PYTHON) -m src.scripts.train --config $(SMOKE_CFG) --cpu-only --epochs 2 --seed 1337
 
 train:
-	$(PYTHON) scripts/train.py $(ARGS)
+	$(PYTHON) -m src.scripts.train $(ARGS)
 
 unit:
 	pytest -q -m "unit"

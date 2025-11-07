@@ -2,7 +2,7 @@ import pytest
 
 pytest.importorskip("torch")
 
-from scripts.train import (  # noqa: E402  # requires torch; skip enforced above
+from src.scripts.train import (  # noqa: E402  # requires torch; skip enforced above
     ModularDataset,
 )
 
