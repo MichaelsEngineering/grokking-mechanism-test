@@ -13,7 +13,7 @@ TESTS ?= tests
 SMOKE_CFG ?= configs/modular_addition.yaml
 
 # ==== Meta ====
-.PHONY: help default init lint type format test test-fast test-watch coverage tdd check smoke train unit integration new-test clean
+.PHONY: help default init lint type format format-check test test-fast test-watch coverage tdd check smoke train unit integration new-test clean sync
 
 default: help
 
@@ -118,3 +118,11 @@ clean:
 	rm -rf .pytest_cache .mypy_cache .ruff_cache .coverage coverage.xml dist build \
 		$(PKG)/*.egg-info .benchmarks
 	find . -type d -name "__pycache__" -exec rm -rf {} +
+
+sync:
+	@echo "Syncing local main with origin/main and cleaning merged branches..."
+	git fetch origin
+	git checkout main
+	git rebase origin/main
+	@git branch --merged main | grep -v "main" | xargs -r git branch -d
+	@git remote prune origin

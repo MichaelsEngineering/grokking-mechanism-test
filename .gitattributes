@@ -1,0 +1,18 @@
+# Set the default behavior to auto-detect text files.
+# Git will handle line endings on its own.
+* text=auto
+
+# Explicitly force Unix-style (LF) line endings for common script files.
+# This keeps WSL/mac/Linux shells happy regardless of host OS.
+*.sh    text eol=lf
+*.py    text eol=lf
+*.js    text eol=lf
+*.ts    text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+
+# Force CRLF for Windows-specific scripts.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
