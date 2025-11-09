@@ -1,14 +1,29 @@
+from typing import Literal, NotRequired, TypedDict
+
 import pytest
 
 pytest.importorskip("torch")
 
-from src.scripts.train import (  # noqa: E402  # requires torch; skip enforced above
-    ModularDataset,
-)
+from src.scripts.train import ModularDataset  # noqa: E402  # requires torch; skip enforced above
+
+
+class ModularDatasetCfg(TypedDict):
+    N: int
+    op: Literal["add", "mul"]
+    train_fraction: float
+    seed: int
+    split: Literal["hash"]
+    val_fraction: NotRequired[float]
 
 
 def test_modular_dataset_split_deterministic():
-    cfg = dict(N=97, op="add", train_fraction=0.1, seed=1337, split="hash")
+    cfg: ModularDatasetCfg = {
+        "N": 97,
+        "op": "add",
+        "train_fraction": 0.1,
+        "seed": 1337,
+        "split": "hash",
+    }
 
     ds_train_1 = ModularDataset(role="train", **cfg)
     ds_val_1 = ModularDataset(role="val", **cfg)

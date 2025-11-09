@@ -9,6 +9,7 @@ unit tests:
   that images are created.  The plotting utilities themselves are intentionally
   lightweight so we can evolve them later without breaking the contract.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -48,6 +49,9 @@ def _read_csv(path: Path) -> List[Dict[str, str]]:
         return list(reader)
 
 
+MetaValue = bool | int | float | str | None
+
+
 # -----------------------------------------------------------------------------
 # Public API
 # -----------------------------------------------------------------------------
@@ -64,7 +68,7 @@ def load_run(run_dir: Path) -> Dict:
     singular = _read_csv(singular_path) if singular_path.exists() else None
 
     meta_row = next((row for row in metrics if row.get("split") == "val"), metrics[0])
-    meta = {"name": run_dir.name}
+    meta: Dict[str, MetaValue] = {"name": run_dir.name}
     for key, value in meta_row.items():
         if key == "split":
             continue
@@ -178,10 +182,7 @@ def plot_time_to_generalization(
         return
     out_dir.mkdir(parents=True, exist_ok=True)
     labels = [run["name"] for run in runs]
-    values = [
-        _compute_t2(run["metrics"], threshold=threshold, patience=patience)
-        for run in runs
-    ]
+    values = [_compute_t2(run["metrics"], threshold=threshold, patience=patience) for run in runs]
     fig, ax = plt.subplots(figsize=(6, 3))
     ax.bar(labels, values, color="tab:green")
     ax.set_ylabel("t2 (steps)")
@@ -213,8 +214,10 @@ def _expand_run_args(single: Optional[str], patterns: Optional[Sequence[str]]) -
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
     run_paths = _expand_run_args(args.run, args.runs)
-    out_dir = Path(args.output_dir) if args.output_dir else (
-        run_paths[0] / "plots" if len(run_paths) == 1 else Path("plots")
+    out_dir = (
+        Path(args.output_dir)
+        if args.output_dir
+        else (run_paths[0] / "plots" if len(run_paths) == 1 else Path("plots"))
     )
     out_dir.mkdir(parents=True, exist_ok=True)
 

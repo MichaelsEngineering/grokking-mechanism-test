@@ -1,20 +1,99 @@
 {
     "version": "2.0.0",
+    "options": {
+        "cwd": "${workspaceFolder}"
+    },
+    "inputs": [
+        {
+            "id": "kerasBackend",
+            "type": "pickString",
+            "description": "Choose the Keras backend for smoke/train tasks",
+            "options": [
+                "torch",
+                "tensorflow",
+                "jax"
+            ],
+            "default": "torch"
+        },
+        {
+            "id": "trainArgs",
+            "type": "promptString",
+            "description": "Extra arguments passed to `make train ARGS=...`",
+            "default": "--config configs/modular_addition.yaml --epochs 2 --seed 1337"
+        }
+    ],
     "tasks": [
         {
-            "label": "Run Torch",
+            "label": "init",
             "type": "shell",
-            "command": "pip install -r requirements-torch.txt && KERAS_BACKEND=torch python scripts/train.py"
+            "command": "make init",
+            "problemMatcher": []
         },
         {
-            "label": "Run TF",
+            "label": "lint",
             "type": "shell",
-            "command": "pip install -r requirements-tensorflow.txt && KERAS_BACKEND=tensorflow python scripts/train.py"
+            "command": "make lint",
+            "problemMatcher": []
         },
         {
-            "label": "Run JAX",
+            "label": "type",
             "type": "shell",
-            "command": "pip install -r requirements-jax.txt && KERAS_BACKEND=jax python scripts/train.py"
+            "command": "make type",
+            "problemMatcher": []
+        },
+        {
+            "label": "format",
+            "type": "shell",
+            "command": "make format",
+            "problemMatcher": []
+        },
+        {
+            "label": "test",
+            "type": "shell",
+            "command": "make test",
+            "problemMatcher": []
+        },
+        {
+            "label": "test:fast",
+            "type": "shell",
+            "command": "make test-fast",
+            "problemMatcher": []
+        },
+        {
+            "label": "tdd",
+            "type": "shell",
+            "command": "make tdd",
+            "problemMatcher": []
+        },
+        {
+            "label": "check",
+            "type": "shell",
+            "command": "make check",
+            "problemMatcher": []
+        },
+        {
+            "label": "coverage",
+            "type": "shell",
+            "command": "make coverage",
+            "problemMatcher": []
+        },
+        {
+            "label": "test:watch",
+            "type": "shell",
+            "command": "make test-watch",
+            "problemMatcher": []
+        },
+        {
+            "label": "smoke",
+            "type": "shell",
+            "command": "KERAS_BACKEND=${input:kerasBackend} make smoke",
+            "problemMatcher": []
+        },
+        {
+            "label": "train",
+            "type": "shell",
+            "command": "KERAS_BACKEND=${input:kerasBackend} make train ARGS=\"${input:trainArgs}\"",
+            "problemMatcher": []
         }
     ]
 }
