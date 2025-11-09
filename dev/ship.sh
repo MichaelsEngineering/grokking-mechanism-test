@@ -35,5 +35,7 @@ git rebase origin/main
 echo "Pushing..."
 git push -u origin HEAD
 
+REPO_PATH=$(git config --get remote.origin.url | sed -E 's#(git@|https://)github.com[:/]|\.git##g')
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "Open a PR:"
-echo "https://github.com/$(git config --get remote.origin.url | sed -E 's#(git@|https://)github.com[:/]|\.git##g')/compare"
+echo "https://github.com/${REPO_PATH}/compare/main...${BRANCH}?expand=1"
