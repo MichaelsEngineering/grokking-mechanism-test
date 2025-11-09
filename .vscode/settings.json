@@ -3,7 +3,8 @@
     "terminal.integrated.defaultProfile.windows": "Ubuntu-22.04",
     "python.defaultInterpreterPath": "/usr/bin/python3",
     "python.analysis.extraPaths": [
-        "${workspaceFolder}/src"
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/tests"
     ],
     "python.testing.pytestEnabled": true,
     "python.testing.pytestArgs": [
@@ -22,8 +23,6 @@
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff"
     },
-    // Avoid formatter fights
-    "python.formatting.provider": "none",
     "jupyter.alwaysTrustNotebooks": false,
     "makefile.configureOnOpen": false
 }

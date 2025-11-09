@@ -13,29 +13,28 @@ TESTS ?= tests
 SMOKE_CFG ?= configs/modular_addition.yaml
 
 # ==== Meta ====
-.PHONY: help default init lint type format format-check test test-fast test-watch coverage tdd check smoke train unit integration new-test clean
+.PHONY: help default init lint type format test test-fast test-watch coverage tdd check smoke train unit integration new-test clean
 
 default: help
 
 help:
 	@echo "Targets:"
-	@echo "  init           Install deps (and optional requirements-dev.txt)"
-	@echo "  lint           Ruff + Black check"
-	@echo "  type           Mypy type check"
-	@echo "  format         Apply Black formatting"
-	@echo "  format-check   Black in check mode"
-	@echo "  test           Run full test suite"
-	@echo "  test-fast      Fail-fast unit tests (-x --maxfail=1)"
-	@echo "  test-watch     Watch tests with pytest-watch (if installed)"
-	@echo "  coverage       Run pytest with coverage reports"
-	@echo "  tdd            Lint + type + fail-fast unit tests (inner loop)"
-	@echo "  check          Lint + type + tests (pre-push)"
-	@echo "  smoke          CPU-only smoke training run with tiny epochs"
-	@echo "  train          Example short train call (override ARGS=...)"
-	@echo "  unit           Only unit tests (mark=unit)"
-	@echo "  integration    Only integration tests (mark=integration)"
-	@echo "  new-test NAME=feature  Scaffold tests/test_feature.py"
-	@echo "  clean          Remove caches and build artifacts"
+	@echo "   init            Install deps (and optional requirements-dev.txt)"
+	@echo "   lint            Ruff check + Ruff format check"
+	@echo "   type            Mypy type check"
+	@echo "   format          Apply Ruff formatting (replaces Black + isort)"
+	@echo "   test            Run full test suite"
+	@echo "   test-fast       Fail-fast unit tests (-x --maxfail=1)"
+	@echo "   test-watch      Watch tests with pytest-watch (if installed)"
+	@echo "   coverage        Run pytest with coverage reports"
+	@echo "   tdd             Lint + type + fail-fast unit tests (inner loop)"
+	@echo "   check           Lint + type + tests (pre-push)"
+	@echo "   smoke           CPU-only smoke training run with tiny epochs"
+	@echo "   train           Example short train call (override ARGS=...)"
+	@echo "   unit            Only unit tests (mark=unit)"
+	@echo "   integration     Only integration tests (mark=integration)"
+	@echo "   new-test NAME=feature  Scaffold tests/test_feature.py"
+	@echo "   clean           Remove caches and build artifacts"
 
 # ==== Setup ====
 init:
@@ -46,19 +45,17 @@ init:
 SRC := $(PKG) $(TESTS)
 
 lint:
-	ruff check $(SRC)
-	black --check $(SRC)
-	isort --check-only $(SRC)
+	@echo "Running Ruff lint..."
+	@ruff check src tests || (echo "❌ Ruff check failed"; exit 1)
+	@echo "Running Ruff format check..."
+	@ruff format --check src tests || (echo "❌ Some files need formatting. Run: ruff format src tests"; exit 1)
+	@echo "✅ All lint checks passed!"
 
 type:
 	mypy $(PKG) $(TESTS)
 
 format:
-	isort $(SRC)
-	black $(SRC)
-
-format-check:
-	black --check $(SRC)
+	ruff format $(SRC)
 
 # ==== Tests ====
 test:

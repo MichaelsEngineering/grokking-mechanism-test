@@ -21,16 +21,6 @@ where = ["src"]
 pythonpath = ["src"]
 addopts = "-q"
 
-[tool.black]
-line-length = 100
-target-version = ["py310"]
-extend-exclude = '''
-(\.git|\.mypy_cache|\.ruff_cache|\.pytest_cache|\.venv|venv|dist|build|\.pre-commit-cache|.*/\.pre-commit-cache/.*|.*/site-packages/.*|.*/\.eggs/.*)
-'''
-
-[tool.isort]
-profile = "black"
-
 [tool.ruff]
 line-length = 100
 extend-exclude = [
@@ -50,6 +40,11 @@ extend-exclude = [
 force-exclude = true
 src = ["src", "tests"]
 
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
 [tool.ruff.lint]
 ignore = ["F541"]
-select = ["E", "F", "W", "I"]
+select = ["E", "F", "W"]

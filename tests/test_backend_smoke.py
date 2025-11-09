@@ -5,6 +5,12 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from importlib import import_module
+from typing import TYPE_CHECKING, Any, cast
+
+if TYPE_CHECKING:
+    keras: Any
+    layers: Any
 
 
 def test_keras_backend_switch(monkeypatch):
@@ -16,8 +22,8 @@ def test_keras_backend_switch(monkeypatch):
         if module.startswith("keras"):
             sys.modules.pop(module)
 
-    import keras
-    from keras import layers
+    keras = cast(Any, import_module("keras"))
+    layers = cast(Any, getattr(keras, "layers"))
 
     # Just ensure backend is set and a model compiles and trains for 1 step
     x = np.random.randn(64, 10).astype("float32")
@@ -61,5 +67,6 @@ def test_train_smoke(tmp_path: Path):
         reader = csv.DictReader(f)
         rows = list(reader)
     assert len(rows) >= 1
+    assert reader.fieldnames is not None
     assert {"step", "train_loss", "train_acc", "val_acc", "test_acc"}.issubset(reader.fieldnames)
     assert int(rows[-1]["step"]) == 50

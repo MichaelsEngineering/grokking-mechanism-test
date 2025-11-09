@@ -49,6 +49,9 @@ def _read_csv(path: Path) -> List[Dict[str, str]]:
         return list(reader)
 
 
+MetaValue = bool | int | float | str | None
+
+
 # -----------------------------------------------------------------------------
 # Public API
 # -----------------------------------------------------------------------------
@@ -65,7 +68,7 @@ def load_run(run_dir: Path) -> Dict:
     singular = _read_csv(singular_path) if singular_path.exists() else None
 
     meta_row = next((row for row in metrics if row.get("split") == "val"), metrics[0])
-    meta = {"name": run_dir.name}
+    meta: Dict[str, MetaValue] = {"name": run_dir.name}
     for key, value in meta_row.items():
         if key == "split":
             continue
