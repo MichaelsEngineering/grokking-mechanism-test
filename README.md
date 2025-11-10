@@ -1,7 +1,7 @@
 # Grokking Mechanism Test
 
 **Exploring the Geometric Grokking Hypothesis** — that delayed generalization in neural networks arises from a *geometric phase transition* minimizing low-frequency energy of an implicit graph Laplacian in learned representations, rather than from weight decay or circuit efficiency alone.
-*(Inspired by “Geometric GROKKING Unlocked & Explained,” Discover AI, 2025.)*
+*(Inspired by [“Geometric GROKKING Unlocked & Explained”](https://youtu.be/PaSm5vHYDew?si=vodCdnDGcaAxfQpJ), Discover AI, 2025.)*
 
 ---
 
@@ -132,6 +132,25 @@ runs/<experiment>/metrics.csv — epoch-level accuracy, loss, and spectral energ
 runs/<experiment>/plots/ — Laplacian energy spectra and generalization curves
 
 runs/<experiment>/checkpoints/ — model weights
+
+## Contributing
+
+### Requesting a Feature
+
+To request a new feature or improvement:
+
+1. Go to **GitHub → Issues → New Issue → ✨ Feature Request**.
+2. Fill out the template fields:
+   - **Title:** `feat: <short-summary>`
+   - **Feature Name:** `feat/<short-topic>`
+   - **Summary:** Brief description of the proposed improvement.
+   - **Proposed Repository Update:** Describe file or directory changes.
+3. Submit the issue.
+   Your request will be reviewed, labeled, and scheduled by maintainers.
+
+Example:
+
+> Introduce a standardized `prompts/` directory for reusable Codex and AI instructions.
 
 ## Planned Experiments
 
