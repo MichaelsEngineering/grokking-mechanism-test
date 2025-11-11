@@ -82,7 +82,7 @@ check: lint type test coverage
 
 # ==== Training shortcuts ====
 smoke:
-	$(PYTHON) -m src.scripts.train --config $(SMOKE_CFG) --cpu-only --epochs 2 --seed 1337
+	$(PYTHON) -m src.scripts.train --config $(SMOKE_CFG) $(ARGS)
 
 train:
 	$(PYTHON) -m src.scripts.train $(ARGS)

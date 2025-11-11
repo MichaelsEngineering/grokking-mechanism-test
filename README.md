@@ -132,7 +132,7 @@ These hooks run locally on CPU, making them suitable for smoke tests and CI. As 
 
 | **Experiment** | **Description** | **Metrics** | **Expected Outcome** | **Status** |
 |----------------|-----------------|--------------|----------------------|-------------|
-| **Spectral Energy Shift Test** | Track how learned representation energy moves from high- to low-frequency Laplacian modes during training. | Low-frequency energy ratio, spectral entropy, validation accuracy. | Gradual transfer of representational energy to smoother modes correlates with grokking onset. | 🚧 Planned |
+| **Spectral Energy Shift Test** | Track how learned representation energy moves from high- to low-frequency Laplacian modes during training. | Low-frequency energy ratio, spectral entropy, validation accuracy. | Gradual transfer of representational energy to smoother modes correlates with grokking onset. | ✅ Completed |
 | **Laplacian Energy Penalty Ablation** | Add or remove an explicit Laplacian energy regularizer to test causal role of geometric smoothness. | Grokking time, accuracy gap, mean feature Laplacian energy. | Models with controlled low-energy bias should grok faster or more consistently. | 🚧 Planned |
 | **Weight-Decay Baseline** | Compare identical models trained with classic L2 weight decay. | Validation accuracy vs. epoch, parameter norm trajectory. | Weight decay alone reproduces some but not all smoothness signatures. | 🚧 Planned |
 | **Circuit-Efficiency Proxy** | Test hypothesis that grokking stems from efficient sub-circuit selection rather than geometric reorganization. | Parameter sparsity, FLOPs, accuracy. | Improvements appear without geometric reorganization, distinguishing competing theories. | 🚧 Planned |
