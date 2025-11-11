@@ -7,58 +7,11 @@
 
 ## Overview
 
-This repository provides the scaffolding for reproducible tests of the **geometric grokking hypothesis**, focusing on controlled toy-tasks drawn from deep learning and reinforcement learning literature.
-The experiments are designed to measure *spectral energy redistribution* and *representation smoothness* as networks transition from memorization to generalization.
+This repository provides the scaffolding for reproducible tests of the **geometric grokking hypothesis**, focusing on controlled toy-tasks drawn from deep learning and reinforcement learning literature. The experiments are designed to measure *spectral energy redistribution* and *representation smoothness* as networks transition from memorization to generalization.
 
 ---
 
-## Repository Structure
-
-grokking-mechanism-test/ <br>
-├── .github/ <br>
-│ └── workflows/ <br>
-│ └── ci.yml <br>
-├── configs/ <br>
-│ └── modular_addition.yaml <br>
-├── runs/ <br>
-├── plots/ <br>
-│ └── modular_addition/ <br>
-│ ├── config_used.yaml <br>
-│ └── metrics.csv <br>
-├── src/ <br>
-│ ├── init.py <br>
-│ ├── scripts/ <br>
-│ │ ├── init.py <br>
-│ │ ├── evaluate.py <br>
-│ │ ├── train.py <br>
-│ │ └── visualize.py <br>
-│ └── pycache/ <br>
-├── tests/ <br>
-│ ├── fixtures/mini_run <br>
-│ ├── test_backend_smoke.py <br>
-│ ├── test_evaluate_fixture.py <br>
-│ ├── test_modular_dataset_split.py <br>
-│ └── test_visualize.py <br>
-├── .gitignore <br>
-├── .pre-commit-config.yaml <br>
-├── AGENT.md <br>
-├── CITATION.cff <br>
-├── CODE_OF_CONDUCT.md <br>
-├── CONTRIBUTING.md <br>
-├── keras.json <br>
-├── LICENSE <br>
-├── Makefile <br>
-├── pyproject.toml <br>
-├── README.md <br>
-├── requirements.txt <br>
-├── requirements-dev.txt <br>
-├── requirements-torch.txt <br>
-├── requirements-tensorflow.txt <br>
-└── requirements-jax.txt <br>
-
----
-
-## Environment Setup
+## Getting Started
 
 ### Prerequisites
 - **Python:** 3.11
@@ -67,71 +20,94 @@ grokking-mechanism-test/ <br>
 
 ### Installation
 
-# Clone and enter
+1.  **Clone and enter the repository:**
+    ```bash
+    git clone https://github.com/MichaelsEngineering/grokking-mechanism-test.git
+    cd grokking-mechanism-test
+    ```
 
-```bash
-git clone https://github.com/MichaelsEngineering/grokking-mechanism-test.git
-cd grokking-mechanism-test
-```
+2.  **Create a virtual environment (optional but recommended):**
+    ```bash
+    python3.11 -m venv grokking-mech-env
+    source grokking-mech-env/bin/activate
+    ```
 
-# Create virtual environment (optional)
+3.  **Install dependencies (PyTorch default):**
+    ```bash
+    pip install -r requirements.txt
+    pip install -r requirements-dev.txt
+    pip install -r requirements-torch.txt
+    # Or run: make init
+    ```
+    *Alternate backends are available via `requirements-jax.txt` and `requirements-tensorflow.txt`.*
 
-```bash
-python3.11 -m venv grokking-mech-env
-source grokking-mech-env/bin/activate
-```
+---
+## Usage
 
-# Install dependencies (PyTorch default)
+The YAML configuration files in `configs/` are the central control mechanism for experiments. They are used by `src.scripts.train` to define and parameterize every aspect of a specific experiment, from data generation to metric computation.
 
-```bash
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
-# or run: make init
-pip install -r requirements-torch.txt or < Alternate backends are still available through the backend-specific files `requirements-jax.txt`/ `requirements-tensorflow.txt`).
-```
-### Usage
-
-The YAML configuration files are the central control mechanism for the project. They are used by `src.scripts.train` to define and parameterize every aspect of a specific experiment, from data generation to metric computation.
-
-Training
-
+### Training
 ```bash
 python -m src.scripts.train --config configs/modular_addition.yaml
 ```
 
-Evaluation
-
+### Evaluation
 ```bash
+# Evaluate a full run directory
 python -m src.scripts.evaluate --run-dir runs/modular_addition
-# or, if you only have the CSV path:
+
+# Or, evaluate from a metrics file
 python -m src.scripts.evaluate --metrics runs/modular_addition/metrics.csv
 ```
 
-Visualization
-
+### Visualization
 ```bash
 python -m src.scripts.visualize --run runs/modular_addition --output_dir plots
 ```
 
-Quick smoke test (CPU-only, tiny run) – useful both locally and in CI before touching training code:
+### Quick Checks
 
+Run a quick, CPU-only smoke test to verify the pipeline:
 ```bash
 make smoke
 ```
 
-Fast local quality gate:
-
+Run the fast local quality gate (linting, type-checking, and unit tests):
 ```bash
 make check
 ```
 
-Expected outputs (once implemented):
+---
 
-runs/<experiment>/metrics.csv — per-split rows (`split ∈ {train,val,test}`) with generic `loss`/`accuracy` columns plus spectral metrics when enabled
+<details>
+<summary><b>📂 Repository Structure</b></summary>
 
-runs/<experiment>/plots/ — Laplacian energy spectra and generalization curves
+```
+grokking-mechanism-test/
+├── .github/              # CI/CD workflows
+├── configs/              # Experiment configuration files (YAML)
+├── runs/                 # Output directory for training runs (logs, checkpoints)
+├── plots/                # Output directory for visualizations
+├── src/                  # Source code
+│   ├── scripts/          # Main scripts for training, evaluation, etc.
+│   └── ...
+├── tests/                # Test suite
+│   ├── fixtures/         # Test data and fixtures
+│   └── ...
+├── .gitignore            # Git ignore rules
+├── .pre-commit-config.yaml # Pre-commit hook configurations
+├── AGENT.md              # Instructions for AI agents
+├── CITATION.cff          # Citation file format
+├── LICENSE               # Project license
+├── Makefile              # Makefile with helper commands (e.g., `make smoke`)
+├── pyproject.toml        # Project metadata and build configuration
+├── README.md             # This file
+└── requirements-*.txt    # Python dependency files for different backends
+```
 
-runs/<experiment>/checkpoints/ — model weights
+</details>
+
+---
 
 ## Spectral Energy Shift Test
 
@@ -149,26 +125,10 @@ The default configuration enables the Spectral Energy Shift Test, which tracks h
 
 These hooks run locally on CPU, making them suitable for smoke tests and CI. As the full training loop matures, the same analyzer will ingest real logits/hidden states instead of the current synthetic probes.
 
-## Contributing
+---
 
-### Requesting a Feature
-
-To request a new feature or improvement:
-
-1. Go to **GitHub → Issues → New Issue → ✨ Feature Request**.
-2. Fill out the template fields:
-   - **Title:** `feat: <short-summary>`
-   - **Feature Name:** `feat/<short-topic>`
-   - **Summary:** Brief description of the proposed improvement.
-   - **Proposed Repository Update:** Describe file or directory changes.
-3. Submit the issue.
-   Your request will be reviewed, labeled, and scheduled by maintainers.
-
-Example:
-
-> Introduce a standardized `prompts/` directory for reusable Codex and AI instructions.
-
-## Planned Experiments
+<details>
+<summary><b>🔬 Planned Experiments</b></summary>
 
 | **Experiment** | **Description** | **Metrics** | **Expected Outcome** | **Status** |
 |----------------|-----------------|--------------|----------------------|-------------|
@@ -179,16 +139,22 @@ Example:
 | **Synthetic Modular Arithmetic** | Minimal synthetic task (e.g., mod-N addition) for measuring grokking transition. | Accuracy, loss, spectral energy distribution. | Clear delayed generalization and spectral phase transition. | 🚧 Planned |
 | **Parity & Sequence Copy Tasks** | RL-style toy domains from small-scale deep-RL benchmarks. | Reward, accuracy, smoothness metrics. | Reinforces that geometric smoothness generalizes beyond simple arithmetic tasks. | 🚧 Planned |
 
+</details>
 
-# Research Context
+---
 
-This repository seeks to provide empirical footing for the geometric grokking hypothesis, connecting observed generalization delays to measurable changes in representation geometry.
-It aims to complement other explanations (regularization, sparsity, or circuit efficiency) by introducing tools to visualize phase transitions in representation manifolds.
+## Contributing
 
-# Citation
+Please see `CONTRIBUTING.md` for details on how to contribute to this project. For feature requests, please use the "✨ Feature Request" issue template on GitHub.
+
+## Research Context
+
+This repository seeks to provide empirical footing for the geometric grokking hypothesis, connecting observed generalization delays to measurable changes in representation geometry. It aims to complement other explanations (regularization, sparsity, or circuit efficiency) by introducing tools to visualize phase transitions in representation manifolds.
+
+## Citation
 
 If you use or reference this repository, please cite:
-
+```bibtex
 @software{mcbride_2025_grokking_mechanism_test,
   author = {Michael McBride},
   title = {grokking-mechanism-test: Geometric Grokking Hypothesis Experiments},
@@ -196,3 +162,4 @@ If you use or reference this repository, please cite:
   url = {https://github.com/MichaelsEngineering/grokking-mechanism-test},
   version = {1.0}
 }
+```
