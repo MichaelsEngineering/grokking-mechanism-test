@@ -55,7 +55,9 @@ train:
 
 spectral:
   compute: true
-  low_freq_cutoff: 0.1
-  projection_samples: 1024    # lighter than 4096, same qualitative signal
+  mode: fraction              # fraction | count | cutoff
+  value: 0.10
+  include_zero: true
+  projection_samples: 1024    # number of per-dimension entries saved per snapshot
+  snapshot_stride: 1          # write every spectral evaluation
   seed: 1337
-  # Save periodic spectral snapshots for

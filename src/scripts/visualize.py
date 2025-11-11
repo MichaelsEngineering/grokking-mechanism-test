@@ -122,9 +122,12 @@ def _to_series(rows: List[Dict[str, str]], key: str):
     for row in rows:
         if key not in row:
             continue
+        value = row[key]
+        if value in {"", None}:
+            continue
         try:
             xs.append(float(row.get("step", 0) or 0))
-            ys.append(float(row[key]))
+            ys.append(float(value))
         except (TypeError, ValueError):
             continue
     return xs, ys
@@ -137,14 +140,17 @@ def plot_core_curves(run: Dict, out_dir: Path, *, xscale: str = "linear") -> Non
 
     def _plot(metric: str, svg: bool) -> None:
         fig, ax = plt.subplots(figsize=(6, 4))
+        has_series = False
         for split, rows in grouped.items():
             xs, ys = _to_series(rows, metric)
             if xs:
                 ax.plot(xs, ys, label=split)
+                has_series = True
         ax.set_xlabel("step")
         ax.set_ylabel(metric)
         ax.set_xscale(xscale)
-        ax.legend(loc="best")
+        if has_series:
+            ax.legend(loc="best")
         ax.grid(True, alpha=0.2)
         fig.tight_layout()
         png_path = out_dir / f"{base}_{metric}_{xscale}.png"
@@ -155,6 +161,34 @@ def plot_core_curves(run: Dict, out_dir: Path, *, xscale: str = "linear") -> Non
 
     _plot("loss", svg=True)
     _plot("accuracy", svg=False)
+
+
+def plot_spectral_curves(run: Dict, out_dir: Path, *, xscale: str = "linear") -> None:
+    rows = run["metrics"]
+    low_x, low_y = _to_series(rows, "spectral_low_frac")
+    ent_x, ent_y = _to_series(rows, "spectral_entropy")
+    if not low_x and not ent_x:
+        return
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    fig, ax1 = plt.subplots(figsize=(6, 4))
+    if low_x:
+        ax1.plot(low_x, low_y, color="tab:blue", label="low_freq_frac")
+        ax1.set_ylabel("low frequency frac", color="tab:blue")
+        ax1.tick_params(axis="y", labelcolor="tab:blue")
+    ax1.set_xlabel("step")
+    ax1.set_xscale(xscale)
+    ax1.grid(True, alpha=0.2)
+
+    if ent_x and ent_y:
+        ax2 = ax1.twinx()
+        ax2.plot(ent_x, ent_y, color="tab:orange", label="spectral_entropy")
+        ax2.set_ylabel("spectral entropy", color="tab:orange")
+        ax2.tick_params(axis="y", labelcolor="tab:orange")
+
+    fig.tight_layout()
+    fig.savefig(out_dir / f"{run['name']}_spectral_{xscale}.png")
+    plt.close(fig)
 
 
 def _compute_t2(rows: List[Dict[str, str]], *, threshold: float, patience: int) -> float:
@@ -224,6 +258,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     runs = [load_run(path) for path in run_paths]
     for run in runs:
         plot_core_curves(run, out_dir / run["name"], xscale=args.xscale)
+        plot_spectral_curves(run, out_dir / run["name"], xscale=args.xscale)
     plot_time_to_generalization(
         runs,
         out_dir,

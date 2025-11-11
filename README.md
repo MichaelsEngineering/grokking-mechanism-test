@@ -127,11 +127,27 @@ make check
 
 Expected outputs (once implemented):
 
-runs/<experiment>/metrics.csv — epoch-level accuracy, loss, and spectral energy
+runs/<experiment>/metrics.csv — per-split rows (`split ∈ {train,val,test}`) with generic `loss`/`accuracy` columns plus spectral metrics when enabled
 
 runs/<experiment>/plots/ — Laplacian energy spectra and generalization curves
 
 runs/<experiment>/checkpoints/ — model weights
+
+## Spectral Energy Shift Test
+
+The default configuration enables the Spectral Energy Shift Test, which tracks how representation energy migrates to smoother Laplacian modes during training.
+
+- **Graph**: We analyze logits on the toroidal 4-neighbor graph \(C_N \Box C_N\) defined over all \((a, b)\) input pairs. Its normalized Laplacian has an analytical 2-D DFT basis, so projections are computed exactly without forming dense matrices.
+- **Sampling cadence**: Spectral metrics are evaluated in lock-step with the training evaluation loop (`train.eval_every_steps`) and always at the final step, ensuring even tiny runs surface correctness/logging signals.
+- **Metrics**: Each evaluation logs the low-frequency energy ratio (`spectral_low_frac`) and spectral entropy (`spectral_entropy`) into `metrics.csv`. Snapshot files saved under `runs/<experiment>/spectral/` include the per-frequency spectrum (`spectrum_step*.pt`) and per-dimension low-energy fractions (`per_dim_step*.csv`) for deeper inspection or plotting.
+- **Configuration knobs**:
+  - `spectral.mode`: `fraction` (default), `count`, or `cutoff`—chooses how to carve out the low-frequency band.
+  - `spectral.value`: parameter attached to the mode (e.g., 0.10 keeps the lowest 10 % of Laplacian modes in `fraction` mode).
+  - `spectral.include_zero`: whether to force the zero-eigenvalue mode into the band.
+  - `spectral.projection_samples`: limits how many per-dimension entries we persist per snapshot (useful for large output spaces).
+  - `spectral.snapshot_stride`: write snapshots every n-th spectral evaluation.
+
+These hooks run locally on CPU, making them suitable for smoke tests and CI. As the full training loop matures, the same analyzer will ingest real logits/hidden states instead of the current synthetic probes.
 
 ## Contributing
 
