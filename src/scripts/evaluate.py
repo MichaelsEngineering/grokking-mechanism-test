@@ -15,25 +15,38 @@ def _read_metrics(path: Path) -> List[Dict[str, str]]:
         return list(reader)
 
 
-def _coerce_entry(row: Dict[str, str]) -> Dict[str, float | int]:
-    entry: Dict[str, float | int] = {}
-    for key, value in row.items():
-        if key == "step":
-            entry[key] = int(value)
-        else:
-            entry[key] = float(value)
-    return entry
+def _coerce_value(value: str | None) -> Optional[float]:
+    if value is None or value == "":
+        return None
+    return float(value)
+
+
+def _aggregate_by_step(rows: List[Dict[str, str]]) -> List[Dict[str, float | int]]:
+    by_step: Dict[int, Dict[str, float | int]] = {}
+    for row in rows:
+        step = int(row.get("step", 0) or 0)
+        bucket = by_step.setdefault(step, {"step": step})
+        split = row.get("split", "train")
+        for key, value in row.items():
+            if key in {"step", "split"}:
+                continue
+            coerced = _coerce_value(value)
+            if coerced is None:
+                continue
+            bucket_key = f"{split}_{key}" if key in {"loss", "accuracy"} else key
+            bucket[bucket_key] = coerced
+    return [by_step[key] for key in sorted(by_step)]
 
 
 def summarize(rows: List[Dict[str, str]]) -> Dict:
-    entries = [_coerce_entry(row) for row in rows]
+    entries = _aggregate_by_step(rows)
     summary: Dict[str, object] = {"num_points": len(entries)}
     if not entries:
         summary["last"] = None
         summary["best_val"] = None
         return summary
     last = entries[-1]
-    best = max(entries, key=lambda item: (item.get("val_acc", float("-inf")), item["step"]))
+    best = max(entries, key=lambda item: (item.get("val_accuracy", float("-inf")), item["step"]))
     summary["last"] = last
     summary["best_val"] = best
     return summary

@@ -17,11 +17,18 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, MutableMapping, Sequence
 
 import torch
 from torch.utils.data import Dataset
+
+try:
+    from src.grokking_mechanism.spectral import SpectralLogger
+except ModuleNotFoundError:  # pragma: no cover - script executed directly
+    sys.path.append(str(Path(__file__).resolve().parents[2]))
+    from src.grokking_mechanism.spectral import SpectralLogger
 
 try:  # Optional – we do not require PyYAML in tests, but use it when present.
     import yaml  # type: ignore
@@ -168,25 +175,56 @@ def run_stub_training(cfg: Dict[str, Any], config_path: Path) -> None:
     train_cfg = cfg.setdefault("train", {})
     total_steps = int(train_cfg.get("total_steps", 1))
     logging_cfg = cfg.setdefault("logging", {})
+    dataset_cfg = cfg.setdefault("dataset", {})
+    spectral_cfg = cfg.setdefault("spectral", {})
     default_out = Path("runs") / config_path.stem
     out_dir = Path(logging_cfg.get("out_dir", default_out))
     out_dir.mkdir(parents=True, exist_ok=True)
+    spectral_logger = None
+    if spectral_cfg.get("compute", False):
+        spectral_logger = SpectralLogger(
+            dataset_cfg=dataset_cfg,
+            train_cfg=train_cfg,
+            spectral_cfg=spectral_cfg,
+            out_dir=out_dir,
+        )
 
     metrics_path = out_dir / "metrics.csv"
-    fieldnames = ["step", "train_loss", "train_acc", "val_acc", "test_acc"]
+    fieldnames = ["step", "split", "loss", "accuracy", "spectral_low_frac", "spectral_entropy"]
+
+    def _val_loss(acc: float) -> float:
+        return round(max(0.0, 1.0 - acc), 6)
+
     with metrics_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         for step in range(1, total_steps + 1):
             progress = step / max(total_steps, 1)
-            row = {
-                "step": step,
-                "train_loss": round(1.0 - 0.5 * progress, 6),
-                "train_acc": round(0.1 + 0.8 * progress, 6),
-                "val_acc": round(0.05 + 0.85 * progress, 6),
-                "test_acc": round(0.04 + 0.9 * progress, 6),
-            }
-            writer.writerow(row)
+            train_loss = round(1.0 - 0.5 * progress, 6)
+            train_acc = round(0.1 + 0.8 * progress, 6)
+            val_acc = round(0.05 + 0.85 * progress, 6)
+            test_acc = round(0.04 + 0.9 * progress, 6)
+
+            splits = [
+                ("train", train_loss, train_acc),
+                ("val", _val_loss(val_acc), val_acc),
+                ("test", _val_loss(test_acc), test_acc),
+            ]
+            spectral_metrics = (
+                spectral_logger.maybe_log(step, total_steps) if spectral_logger else {}
+            )
+            for split, loss, acc in splits:
+                row = {
+                    "step": step,
+                    "split": split,
+                    "loss": loss,
+                    "accuracy": acc,
+                    "spectral_low_frac": "",
+                    "spectral_entropy": "",
+                }
+                if split == "val" and spectral_metrics:
+                    row.update(spectral_metrics)
+                writer.writerow(row)
 
     config_copy = out_dir / "config_used.yaml"
     if yaml is not None:

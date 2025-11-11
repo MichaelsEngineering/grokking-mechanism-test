@@ -62,11 +62,23 @@ def test_train_smoke(tmp_path: Path):
     assert metrics.exists()
     assert cfg_copy.exists()
 
-    # header & last step
+    # header & per-split rows
     with metrics.open() as f:
         reader = csv.DictReader(f)
         rows = list(reader)
-    assert len(rows) >= 1
+    assert len(rows) >= 3
     assert reader.fieldnames is not None
-    assert {"step", "train_loss", "train_acc", "val_acc", "test_acc"}.issubset(reader.fieldnames)
-    assert int(rows[-1]["step"]) == 50
+    expected_fields = {"step", "split", "loss", "accuracy", "spectral_low_frac", "spectral_entropy"}
+    assert expected_fields.issubset(reader.fieldnames)
+
+    train_rows = [row for row in rows if row["split"] == "train"]
+    val_rows = [row for row in rows if row["split"] == "val"]
+    test_rows = [row for row in rows if row["split"] == "test"]
+    assert len(train_rows) == 50
+    assert len(val_rows) == 50
+    assert len(test_rows) == 50
+
+    last_val = val_rows[-1]
+    assert int(last_val["step"]) == 50
+    assert last_val["spectral_low_frac"] not in ("", None)
+    assert last_val["spectral_entropy"] not in ("", None)

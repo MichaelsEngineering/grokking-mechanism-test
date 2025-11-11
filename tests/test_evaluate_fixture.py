@@ -37,13 +37,24 @@ def test_evaluate_fixture_snapshot(run_subdir: str) -> None:
     expected_last = {
         "step": 8,
         "train_loss": 4.5537109375,
-        "train_acc": 0.09375,
-        "val_acc": 0.0729166667,
-        "test_acc": 0.0625,
+        "train_accuracy": 0.09375,
+        "val_loss": 0.9270833333,
+        "val_accuracy": 0.0729166667,
+        "test_loss": 0.9375,
+        "test_accuracy": 0.0625,
+        "spectral_low_frac": 0.12,
+        "spectral_entropy": 0.85,
     }
 
     for field in ("last", "best_val"):
         got = metrics[field]
         assert got["step"] == expected_last["step"]
-        for key in ("train_loss", "train_acc", "val_acc", "test_acc"):
+        for key in (
+            "train_loss",
+            "train_accuracy",
+            "val_loss",
+            "val_accuracy",
+            "test_loss",
+            "test_accuracy",
+        ):
             assert got[key] == pytest.approx(expected_last[key])
