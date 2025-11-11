@@ -1,6 +1,5 @@
 dataset:
   N: 97
-  cache: true
   op: add
   seed: 1337
   split: hash
@@ -9,6 +8,7 @@ loader:
   batch_size: 512
   num_workers: 2
   pin_memory: true
+logging: {}
 model:
   activation: relu
   dropout: 0.0
@@ -20,9 +20,12 @@ model:
   type: mlp
 spectral:
   compute: true
-  low_freq_cutoff: 0.1
+  include_zero: true
+  mode: fraction
   projection_samples: 1024
   seed: 1337
+  snapshot_stride: 1
+  value: 0.1
 task: modular
 train:
   betas:
@@ -43,5 +46,5 @@ train:
     min_lr_ratio: 0.05
     name: cosine_with_warmup
     warmup_steps: 2000
-  total_steps: 5000
+  total_steps: 300000
   weight_decay: 1e-2
