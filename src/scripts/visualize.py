@@ -1,15 +1,3 @@
-"""Small visualization helper used by the test-suite.
-
-The functions implemented here purposely cover just enough surface area for
-unit tests:
-
-* ``load_run`` loads metrics/singular value CSVs and exposes a metadata dict.
-* ``parse_args`` mirrors the CLI interface exercised in the subprocess test.
-* ``main`` produces a couple of simple matplotlib plots so the test can assert
-  that images are created.  The plotting utilities themselves are intentionally
-  lightweight so we can evolve them later without breaking the contract.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -23,10 +11,6 @@ import matplotlib
 
 matplotlib.use("Agg", force=True)
 import matplotlib.pyplot as plt
-
-# -----------------------------------------------------------------------------
-# CSV helpers
-# -----------------------------------------------------------------------------
 
 
 def _autocast(value: str | None):
@@ -215,10 +199,28 @@ def plot_time_to_generalization(
     if not runs:
         return
     out_dir.mkdir(parents=True, exist_ok=True)
-    labels = [run["name"] for run in runs]
-    values = [_compute_t2(run["metrics"], threshold=threshold, patience=patience) for run in runs]
+    labels = []
+    values = []
+    for run in runs:
+        t2 = _compute_t2(run["metrics"], threshold=threshold, patience=patience)
+        if math.isnan(t2):
+            continue
+        labels.append(run["name"])
+        values.append(t2)
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(labels, values, color="tab:green")
+    if values:
+        ax.bar(labels, values, color="tab:green")
+    else:
+        ax.text(
+            0.5,
+            0.5,
+            "No runs reached threshold",
+            ha="center",
+            va="center",
+            transform=ax.transAxes,
+            fontsize=11,
+            color="gray",
+        )
     ax.set_ylabel("t2 (steps)")
     ax.set_title("Time to generalization")
     ax.grid(True, axis="y", alpha=0.3)

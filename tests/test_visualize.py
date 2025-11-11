@@ -150,3 +150,42 @@ def test_visualize_script_creates_expected_plots(fake_run: Path, tmp_path: Path,
     ]
     for path in expected_files:
         assert path.exists(), f"Expected plot missing: {path}"
+
+
+def test_time_to_generalization_handles_missing_threshold(tmp_path: Path):
+    run_dir = tmp_path / "no_grok"
+    run_dir.mkdir()
+    rows = []
+    for step in (1, 2, 3):
+        rows.append(
+            {
+                "step": step,
+                "split": "train",
+                "loss": 1.0,
+                "accuracy": 0.2,
+                "spectral_low_frac": "",
+                "spectral_entropy": "",
+            }
+        )
+        rows.append(
+            {
+                "step": step,
+                "split": "val",
+                "loss": 0.8,
+                "accuracy": 0.3,
+                "spectral_low_frac": "",
+                "spectral_entropy": "",
+            }
+        )
+    with (run_dir / "metrics.csv").open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
+
+    visualize.plot_time_to_generalization(
+        [visualize.load_run(run_dir)],
+        tmp_path / "plots",
+        threshold=0.99,
+        patience=1,
+    )
+    assert (tmp_path / "plots" / "time_to_generalization_t2.png").exists()
