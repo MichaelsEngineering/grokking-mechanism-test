@@ -77,6 +77,14 @@ Run the fast local quality gate (linting, type-checking, and unit tests):
 make check
 ```
 
+## Make Targets
+
+```bash
+make smoke     # Tiny CPU-only training sanity check
+make check     # Pre-push quality gate (lint + type + tests)
+make analytic  # Runs analytic dynamics test (Musat 2025 reproduction)
+```
+
 ---
 
 <details>
@@ -109,7 +117,9 @@ grokking-mechanism-test/
 
 ---
 
-## Spectral Energy Shift Test
+## Spectral Mechanism Tests
+
+### Spectral Energy Shift Test
 
 The default configuration enables the Spectral Energy Shift Test, which tracks how representation energy migrates to smoother Laplacian modes during training.
 
@@ -124,6 +134,24 @@ The default configuration enables the Spectral Energy Shift Test, which tracks h
   - `spectral.snapshot_stride`: write snapshots every n-th spectral evaluation.
 
 These hooks run locally on CPU, making them suitable for smoke tests and CI. As the full training loop matures, the same analyzer will ingest real logits/hidden states instead of the current synthetic probes.
+
+### 🧩 Analytic Dynamics Test (Norm Minimization)
+
+Implements an analytic reproduction of grokking as described in **Musat (2025)**. Instead of stochastic training, this test integrates the *zero-loss manifold gradient flow*:
+
+\[
+\dot{W}_1 \approx X^T[(A Y Y^T A H) \odot \sigma'(X W_1)] - W_1
+\]
+
+This simulates how weight decay minimizes the parameter norm while staying on the zero-loss manifold, reproducing **delayed generalization** and **circular Fourier embeddings** seen in modular addition tasks.
+
+**Test name:** `test_norm_min_dynamics.py`  
+**Config flag:** `analytic_dynamics: true`  
+**Assertions:**  
+- training loss remains near zero  
+- test accuracy rises late  
+- Fourier feature norms equalize  
+- real/imag Fourier parts become orthogonal
 
 ---
 
