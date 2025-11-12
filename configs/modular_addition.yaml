@@ -61,3 +61,7 @@ spectral:
   projection_samples: 1024    # number of per-dimension entries saved per snapshot
   snapshot_stride: 1          # write every spectral evaluation
   seed: 1337
+
+analytic_dynamics: true
+analytic_steps: 5000
+analytic_lr: 1e-3

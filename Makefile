@@ -93,6 +93,9 @@ unit:
 integration:
 	pytest -q -m "integration"
 
+analytic:
+	pytest -k "norm_min_dynamics" -v
+
 # ==== Scaffolding ====
 # Create a basic unit test file: make new-test NAME=feature_x
 new-test:
