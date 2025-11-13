@@ -65,3 +65,7 @@ spectral:
 analytic_dynamics: true
 analytic_steps: 5000
 analytic_lr: 1e-3
+
+laplacian_penalty:
+  compute: false
+  alpha: 0.01                 # Penalty strength; only used if compute=true

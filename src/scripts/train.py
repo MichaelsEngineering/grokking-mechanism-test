@@ -25,10 +25,12 @@ import torch
 from torch.utils.data import Dataset
 
 try:
-    from src.grokking_mechanism.spectral import SpectralLogger
+    from src.grokking_mechanism.loss import LaplacianEnergyPenalty
+    from src.grokking_mechanism.spectral import SpectralLogger, synthetic_logits
 except ModuleNotFoundError:  # pragma: no cover - script executed directly
     sys.path.append(str(Path(__file__).resolve().parents[2]))
-    from src.grokking_mechanism.spectral import SpectralLogger
+    from src.grokking_mechanism.loss import LaplacianEnergyPenalty
+    from src.grokking_mechanism.spectral import SpectralLogger, synthetic_logits
 
 try:  # Optional – we do not require PyYAML in tests, but use it when present.
     import yaml  # type: ignore
@@ -177,6 +179,7 @@ def run_stub_training(cfg: Dict[str, Any], config_path: Path) -> None:
     logging_cfg = cfg.setdefault("logging", {})
     dataset_cfg = cfg.setdefault("dataset", {})
     spectral_cfg = cfg.setdefault("spectral", {})
+    penalty_cfg = cfg.setdefault("laplacian_penalty", {})
     default_out = Path("runs") / config_path.stem
     out_dir = Path(logging_cfg.get("out_dir", default_out))
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -188,9 +191,22 @@ def run_stub_training(cfg: Dict[str, Any], config_path: Path) -> None:
             spectral_cfg=spectral_cfg,
             out_dir=out_dir,
         )
+    penalty_fn = None
+    if penalty_cfg.get("compute", False):
+        penalty_fn = LaplacianEnergyPenalty(
+            modulus=int(dataset_cfg["N"]), alpha=float(penalty_cfg["alpha"])
+        )
 
     metrics_path = out_dir / "metrics.csv"
-    fieldnames = ["step", "split", "loss", "accuracy", "spectral_low_frac", "spectral_entropy"]
+    fieldnames = [
+        "step",
+        "split",
+        "loss",
+        "accuracy",
+        "spectral_low_frac",
+        "spectral_entropy",
+        "laplacian_penalty",
+    ]
 
     def _val_loss(acc: float) -> float:
         return round(max(0.0, 1.0 - acc), 6)
@@ -204,6 +220,15 @@ def run_stub_training(cfg: Dict[str, Any], config_path: Path) -> None:
             train_acc = round(0.1 + 0.8 * progress, 6)
             val_acc = round(0.05 + 0.85 * progress, 6)
             test_acc = round(0.04 + 0.9 * progress, 6)
+            penalty_val = 0.0
+
+            if penalty_fn:
+                # Use synthetic logits for the stub, mirroring spectral logger
+                stub_logits = synthetic_logits(
+                    penalty_fn.modulus, step, total_steps, seed=train_cfg.get("seed", 0)
+                )
+                penalty_val = float(penalty_fn(stub_logits).item())
+                train_loss += penalty_val
 
             splits = [
                 ("train", train_loss, train_acc),
@@ -221,7 +246,10 @@ def run_stub_training(cfg: Dict[str, Any], config_path: Path) -> None:
                     "accuracy": acc,
                     "spectral_low_frac": "",
                     "spectral_entropy": "",
+                    "laplacian_penalty": "",
                 }
+                if split == "train" and penalty_fn:
+                    row["laplacian_penalty"] = round(penalty_val, 6)
                 if split == "val" and spectral_metrics:
                     row.update(spectral_metrics)
                 writer.writerow(row)
