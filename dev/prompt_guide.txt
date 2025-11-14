@@ -1,0 +1,13 @@
+Task: <short description of what you want>
+
+Context:
+- Files: <paths and key symbols>
+- Logs / stack trace: <pasted or summarized>
+- Constraints: <no new deps / match existing style / performance notes>
+
+Verify:
+- Run: <command(s) to run>
+- Expect: <what success looks like>
+
+Output:
+- <how you want the answer formatted, if you care>
