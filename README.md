@@ -139,9 +139,9 @@ These hooks run locally on CPU, making them suitable for smoke tests and CI. As 
 
 Implements an analytic reproduction of grokking as described in **Musat (2025)**. Instead of stochastic training, this test integrates the *zero-loss manifold gradient flow*:
 
-\[
-\dot{W}_1 \approx X^T[(A Y Y^T A H) \odot \sigma'(X W_1)] - W_1
-\]
+$$
+\dot{W}_1 \approx X^\top\!\left[(A\,Y\,Y^\top\! A H) \odot \sigma'(X W_1)\right] - W_1
+$$
 
 This simulates how weight decay minimizes the parameter norm while staying on the zero-loss manifold, reproducing **delayed generalization** and **circular Fourier embeddings** seen in modular addition tasks.
 
