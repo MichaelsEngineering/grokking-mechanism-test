@@ -173,7 +173,7 @@ This simulates how weight decay minimizes the parameter norm while staying on th
 
 ## Contributing
 
-Please see `CONTRIBUTING.md` for details on how to contribute to this project. For feature requests, please use the "✨ Feature Request" issue template on GitHub.
+Please see `CONTRIBUTING.md` for details on how to contribute to this project, including how to submit bug reports and feature requests.
 
 ## Research Context
 

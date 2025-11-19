@@ -38,4 +38,12 @@ git config --global core.autocrlf input
 git config --global init.defaultBranch main
 git config --global commit.verbose true
 git config --global push.autoSetupRemote true
+
+---
+
+## 🐞 Reporting Bugs and Proposing Features
+
+We welcome bug reports and feature requests! To ensure we have all the necessary information, please use our combined **[Bug Report / Feature Request](/.github/ISSUE_TEMPLATE/bug_feature_report.md)** template when creating a new issue.
+
+This template is designed to capture all the relevant details for both bugs and features in a structured way, which helps us understand the context and aids our AI-assisted development workflow. When you create an issue, you will be prompted to use this template.
 ```
